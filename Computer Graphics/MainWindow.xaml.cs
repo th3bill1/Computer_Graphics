@@ -110,6 +110,48 @@ namespace Computer_Graphics
                 ImageDisplay.Source = displayedImage;
             }
         }
+        private void ApplyBlur_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = ConvolutionFilters.ApplyBlur(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyGaussianBlur_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = ConvolutionFilters.ApplyGaussianBlur(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplySharpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = ConvolutionFilters.ApplySharpen(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyEdgeDetection_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = ConvolutionFilters.ApplyEdgeDetection(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyEmboss_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = ConvolutionFilters.ApplyEmboss(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+
+
 
     }
 }

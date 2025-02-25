@@ -8,17 +8,26 @@
         Title="Image Editor" Height="600" Width="800">
     <Grid>
         <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation= "Horizontal" HorizontalAlignment= "Center" Margin= "10" >
-                <Button Content= "Load Image" Click= "LoadImage_Click" Margin= "5" />
-                <Button Content= "Save Image" Click= "SaveImage_Click" Margin= "5" />
-                <Button Content= "Reset Image" Click= "ResetImage_Click" Margin= "5" />
-            </StackPanel>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                <Button Content="Inversion" Click="ApplyInversion_Click" Margin="5" />
-                <Button Content="Brightness" Click="ApplyBrightnessCorrection_Click" Margin="5" />
-                <Button Content="Contrast" Click="ApplyContrastEnhancement_Click" Margin="5" />
-                <Button Content="Gamma" Click="ApplyGammaCorrection_Click" Margin="5" />
-            </StackPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" Click= "LoadImage_Click"/>
+                    <MenuItem Header="_Reset" Click= "ResetImage_Click"/>
+                    <MenuItem Header="_Save" Click= "SaveImage_Click"/>
+                </MenuItem>
+                <MenuItem Header="FunctionFilters">
+                    <MenuItem Header="_Inversion" Click="ApplyInversion_Click"/>
+                    <MenuItem Header="_Brightness" Click="ApplyBrightnessCorrection_Click"/>
+                    <MenuItem Header="_Contrast" Click="ApplyContrastEnhancement_Click"/>
+                    <MenuItem Header="_Gamma" Click="ApplyGammaCorrection_Click"/>
+                </MenuItem>
+                <MenuItem Header="ConvolutionFilters">
+                    <MenuItem Header="Blur" Click="ApplyBlur_Click"/>
+                    <MenuItem Header="GaussianBlur" Click="ApplyGaussianBlur_Click"/>
+                    <MenuItem Header="Sharpen" Click="ApplySharpen_Click"/>
+                    <MenuItem Header="Edge detection" Click="ApplyEdgeDetection_Click"/>
+                    <MenuItem Header="Emboss" Click="ApplyEmboss_Click"/>
+                </MenuItem>
+            </Menu>
             <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
         </DockPanel>
     </Grid>
