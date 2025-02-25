@@ -1,157 +1,180 @@
 ﻿using Microsoft.Win32;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace Computer_Graphics
-{
-    public partial class MainWindow : Window
-    {
-        private BitmapImage originalImage;
+namespace Computer_Graphics;
 
-        private WriteableBitmap displayedImage;
-        public MainWindow()
+public partial class MainWindow : Window
+{
+    public static MainWindow? Instance { get; private set; }
+
+    private BitmapImage originalImage;
+    private WriteableBitmap displayedImage;
+    public WriteableBitmap DisplayedImage
+    {
+        get => displayedImage;
+        set => displayedImage = value;
+    }
+
+    private const string LUT_FOLDER = "Resources/LUTs/";
+    private const string PLACEHOLDER_PATH = "pack://application:,,,/Resources/placeholder.png";
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        originalImage = new(new Uri(PLACEHOLDER_PATH));
+        displayedImage = new(originalImage);
+        ImageDisplay.Source = displayedImage;
+        Instance = this;
+
+        LoadLUTFilters();
+    }
+
+    private void LoadImage_Click(object sender, RoutedEventArgs e)
+    {
+        OpenFileDialog openFileDialog = new()
         {
-            InitializeComponent();
-            originalImage = new(new Uri("pack://application:,,,/Resources/placeholder.png"));
-            displayedImage = new(originalImage);
+            Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"
+        };
+
+        if (openFileDialog.ShowDialog() == true)
+        {
+            originalImage = new BitmapImage(new Uri(openFileDialog.FileName));
+            displayedImage = new WriteableBitmap(originalImage);
             ImageDisplay.Source = displayedImage;
         }
+    }
 
-        private void LoadImage_Click(object sender, RoutedEventArgs e)
+    private void SaveImage_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage == null)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            MessageBox.Show("No image to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        SaveFileDialog saveFileDialog = new()
+        {
+            Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp"
+        };
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            BitmapEncoder encoder = saveFileDialog.FilterIndex switch
             {
-                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"
+                1 => new PngBitmapEncoder(),
+                2 => new JpegBitmapEncoder(),
+                3 => new BmpBitmapEncoder(),
+                _ => new PngBitmapEncoder()
             };
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                originalImage = new BitmapImage(new Uri(openFileDialog.FileName));
-                displayedImage = new WriteableBitmap(originalImage);
-                ImageDisplay.Source = displayedImage;
-            }
+            encoder.Frames.Add(BitmapFrame.Create(displayedImage));
+            using var fileStream = File.Create(saveFileDialog.FileName);
+            encoder.Save(fileStream);
+        }
+    }
+
+    private void ResetImage_Click(object sender, RoutedEventArgs e)
+    {
+        if (originalImage != null)
+        {
+            displayedImage = new WriteableBitmap(originalImage);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+
+    private void ApplyLUTFilter(string filePath)
+    {
+        if (displayedImage != null)
+        {
+            displayedImage = FunctionFilters.ApplyFunctionFromFile(displayedImage, filePath);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+
+    private void LoadLUTFilters()
+    {
+        string fullLUTPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LUT_FOLDER);
+
+        if (!Directory.Exists(fullLUTPath))
+        {
+            MessageBox.Show($"LUT folder not found: {fullLUTPath}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
 
-        private void SaveImage_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage == null)
-            {
-                MessageBox.Show("No image to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+        Menu mainMenu = (Menu)this.FindName("MainMenu");
+        MenuItem functionFiltersMenu = mainMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(item => item.Header.ToString() == "Function filters");
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+        if (functionFiltersMenu == null) return;
+
+        string[] lutFiles = Directory.GetFiles(fullLUTPath, "*.filter");
+
+        foreach (string filePath in lutFiles)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+            MenuItem filterItem = new()
             {
-                Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp"
+                Header = fileName.Replace("_"," "),
+                Tag = filePath
+            };
+            filterItem.Click += (sender, e) =>
+            {
+                ApplyLUTFilter(filePath);
             };
 
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                BitmapEncoder encoder;
-                switch (saveFileDialog.FilterIndex)
-                {
-                    case 1:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                    case 2:
-                        encoder = new JpegBitmapEncoder();
-                        break;
-                    case 3:
-                        encoder = new BmpBitmapEncoder();
-                        break;
-                    default:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                }
+            functionFiltersMenu.Items.Add(filterItem);
+        }
+    }
 
-                encoder.Frames.Add(BitmapFrame.Create(displayedImage));
-                using var fileStream = System.IO.File.Create(saveFileDialog.FileName);
-                encoder.Save(fileStream);
-            }
-        }
+    private void OpenFilterEditor_Click(object sender, RoutedEventArgs e)
+    {
+        FilterEditorWindow editorWindow = new();
+        editorWindow.Show();
+    }
 
-        private void ResetImage_Click(object sender, RoutedEventArgs e)
+    private void ApplyBlur_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage != null)
         {
-            if (originalImage != null)
-            {
-                displayedImage = new WriteableBitmap(originalImage);
-                ImageDisplay.Source = displayedImage;
-            }
+            displayedImage = ConvolutionFilters.ApplyBlur(displayedImage);
+            ImageDisplay.Source = displayedImage;
         }
-        private void ApplyInversion_Click(object sender, RoutedEventArgs e)
+    }
+    private void ApplyGaussianBlur_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage != null)
         {
-            if (displayedImage != null)
-            {
-                displayedImage = FunctionFilters.Inversion(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
+            displayedImage = ConvolutionFilters.ApplyGaussianBlur(displayedImage);
+            ImageDisplay.Source = displayedImage;
         }
-        private void ApplyBrightnessCorrection_Click(object sender, RoutedEventArgs e)
+    }
+    private void ApplySharpen_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage != null)
         {
-            if (displayedImage != null)
-            {
-                displayedImage = FunctionFilters.AdjustBrightness(displayedImage, 10);
-                ImageDisplay.Source = displayedImage;
-            }
+            displayedImage = ConvolutionFilters.ApplySharpen(displayedImage);
+            ImageDisplay.Source = displayedImage;
         }
-        private void ApplyContrastEnhancement_Click(object sender, RoutedEventArgs e)
+    }
+    private void ApplyEdgeDetection_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage != null)
         {
-            if (displayedImage != null)
-            {
-                displayedImage = FunctionFilters.AdjustContrast(displayedImage, 10);
-                ImageDisplay.Source = displayedImage;
-            }
+            displayedImage = ConvolutionFilters.ApplyEdgeDetection(displayedImage);
+            ImageDisplay.Source = displayedImage;
         }
-        private void ApplyGammaCorrection_Click(object sender, RoutedEventArgs e)
+    }
+    private void ApplyEmboss_Click(object sender, RoutedEventArgs e)
+    {
+        if (displayedImage != null)
         {
-            if (displayedImage != null)
-            {
-                displayedImage = FunctionFilters.AdjustGamma(displayedImage, 1.5);
-                ImageDisplay.Source = displayedImage;
-            }
+            displayedImage = ConvolutionFilters.ApplyEmboss(displayedImage);
+            ImageDisplay.Source = displayedImage;
         }
-        private void ApplyBlur_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = ConvolutionFilters.ApplyBlur(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-        private void ApplyGaussianBlur_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = ConvolutionFilters.ApplyGaussianBlur(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-        private void ApplySharpen_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = ConvolutionFilters.ApplySharpen(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-        private void ApplyEdgeDetection_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = ConvolutionFilters.ApplyEdgeDetection(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-        private void ApplyEmboss_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = ConvolutionFilters.ApplyEmboss(displayedImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-
-
-
     }
 }

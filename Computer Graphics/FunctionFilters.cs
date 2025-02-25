@@ -1,105 +1,45 @@
-﻿using System.Windows.Media.Imaging;
+﻿using System.IO;
+using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
 
-namespace Computer_Graphics;
-internal class FunctionFilters
+namespace Computer_Graphics
 {
-    public static WriteableBitmap Inversion(WriteableBitmap bitmap)
+    internal class FunctionFilters
     {
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        bitmap.CopyPixels(pixelData, stride, 0);
-
-        for (int i = 0; i < pixelData.Length; i += 4)
+        public static Func<byte, byte> LoadFunctionFromFile(string filePath)
         {
-            pixelData[i] = (byte)(255 - pixelData[i]);
-            pixelData[i + 1] = (byte)(255 - pixelData[i + 1]);
-            pixelData[i + 2] = (byte)(255 - pixelData[i + 2]);
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("Filter file not found!");
+
+            byte[] lut = File.ReadAllText(filePath).Split(',').Select(byte.Parse).ToArray();
+            return value => lut[value];
         }
 
-        WriteableBitmap invertedBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
-        invertedBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
-
-        return invertedBitmap;
-    }
-
-    public static WriteableBitmap AdjustBrightness(WriteableBitmap bitmap, int brightness)
-    {
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        bitmap.CopyPixels(pixelData, stride, 0);
-
-        for (int i = 0; i < pixelData.Length; i += 4)
+        public static WriteableBitmap ApplyFunctionFromFile(WriteableBitmap bitmap, string filePath)
         {
-            pixelData[i] = Clamp(pixelData[i] + brightness);
-            pixelData[i + 1] = Clamp(pixelData[i + 1] + brightness);
-            pixelData[i + 2] = Clamp(pixelData[i + 2] + brightness);
+            return ApplyFunctionFilter(bitmap, LoadFunctionFromFile(filePath));
         }
 
-        WriteableBitmap brightenedBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
-        brightenedBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
-
-        return brightenedBitmap;
-    }
-
-    public static WriteableBitmap AdjustContrast(WriteableBitmap bitmap, double contrast)
-    {
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        bitmap.CopyPixels(pixelData, stride, 0);
-
-        double factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
-        for (int i = 0; i < pixelData.Length; i += 4)
+        public static WriteableBitmap ApplyFunctionFilter(WriteableBitmap bitmap, Func<byte, byte> filterFunction)
         {
-            pixelData[i] = Clamp(factor * (pixelData[i] - 128) + 128);
-            pixelData[i + 1] = Clamp(factor * (pixelData[i + 1] - 128) + 128);
-            pixelData[i + 2] = Clamp(factor * (pixelData[i + 2] - 128) + 128);
+            int width = bitmap.PixelWidth;
+            int height = bitmap.PixelHeight;
+            int stride = width * 4;
+            byte[] pixelData = new byte[height * stride];
+            bitmap.CopyPixels(pixelData, stride, 0);
+
+            for (int i = 0; i < pixelData.Length; i += 4)
+            {
+                pixelData[i] = filterFunction(pixelData[i]);
+                pixelData[i + 1] = filterFunction(pixelData[i + 1]);
+                pixelData[i + 2] = filterFunction(pixelData[i + 2]);
+            }
+
+            WriteableBitmap filteredBitmap = new(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
+            filteredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
+
+            return filteredBitmap;
         }
-
-        WriteableBitmap contrastBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
-        contrastBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
-
-        return contrastBitmap;
     }
-
-    public static WriteableBitmap AdjustGamma(WriteableBitmap bitmap, double gamma)
-    {
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        bitmap.CopyPixels(pixelData, stride, 0);
-
-        byte[] gammaCorrection = new byte[256];
-        for (int i = 0; i < 256; i++)
-        {
-            gammaCorrection[i] = Clamp(Math.Pow(i / 255.0, gamma) * 255.0);
-        }
-
-        for (int i = 0; i < pixelData.Length; i += 4)
-        {
-            pixelData[i] = gammaCorrection[pixelData[i]];   
-            pixelData[i + 1] = gammaCorrection[pixelData[i + 1]];
-            pixelData[i + 2] = gammaCorrection[pixelData[i + 2]];
-        }
-
-        WriteableBitmap gammaBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
-        gammaBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
-
-        return gammaBitmap;
-    }
-
-    private static byte Clamp(double value)
-    {
-        return (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));
-    }
-
 }

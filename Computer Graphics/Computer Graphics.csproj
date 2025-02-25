@@ -10,10 +10,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\LUTs\Brightness_correction.filter" />
+    <None Remove="Resources\LUTs\Contrast_enhancement.filter" />
+    <None Remove="Resources\LUTs\Gamma_correction.filter" />
+    <None Remove="Resources\LUTs\Inversion.filter" />
     <None Remove="Resources\placeholder.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\LUTs\Gamma_correction.filter">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Brightness_correction.filter">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Contrast_enhancement.filter">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Inversion.filter">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Resources\placeholder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

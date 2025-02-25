@@ -8,19 +8,16 @@
         Title="Image Editor" Height="600" Width="800">
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
+            <Menu x:Name="MainMenu" DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open" Click= "LoadImage_Click"/>
-                    <MenuItem Header="_Reset" Click= "ResetImage_Click"/>
-                    <MenuItem Header="_Save" Click= "SaveImage_Click"/>
+                    <MenuItem Header="_Open" Click="LoadImage_Click"/>
+                    <MenuItem Header="_Reset" Click="ResetImage_Click"/>
+                    <MenuItem Header="_Save" Click="SaveImage_Click"/>
                 </MenuItem>
-                <MenuItem Header="FunctionFilters">
-                    <MenuItem Header="_Inversion" Click="ApplyInversion_Click"/>
-                    <MenuItem Header="_Brightness" Click="ApplyBrightnessCorrection_Click"/>
-                    <MenuItem Header="_Contrast" Click="ApplyContrastEnhancement_Click"/>
-                    <MenuItem Header="_Gamma" Click="ApplyGammaCorrection_Click"/>
+                <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
+                    <Button Content="Open Filter Editor" Click="OpenFilterEditor_Click" Margin="5"/>
                 </MenuItem>
-                <MenuItem Header="ConvolutionFilters">
+                <MenuItem Header="Convolution filters">
                     <MenuItem Header="Blur" Click="ApplyBlur_Click"/>
                     <MenuItem Header="GaussianBlur" Click="ApplyGaussianBlur_Click"/>
                     <MenuItem Header="Sharpen" Click="ApplySharpen_Click"/>
