@@ -1,6 +1,8 @@
-﻿using System.Windows.Media.Imaging;
-using System.Windows.Media;
+﻿using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using System.Globalization;
 
 namespace Computer_Graphics;
 internal class ConvolutionFilters
@@ -43,25 +45,34 @@ internal class ConvolutionFilters
             }
         }
 
-        WriteableBitmap filteredBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
+        WriteableBitmap filteredBitmap = new(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
         filteredBitmap.WritePixels(new Int32Rect(0, 0, width, height), resultData, stride, 0);
 
         return filteredBitmap;
     }
-    private static byte Clamp(double value)
+
+    public static (double[,], int) LoadConvolutionKernel(string filePath)
     {
-        return (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException("Convolution filter file not found!");
+
+        string[] lines = File.ReadAllLines(filePath);
+        int kernelSize = int.Parse(lines[0]);
+
+        double[,] kernel = new double[kernelSize, kernelSize];
+        for (int i = 0; i < kernelSize; i++)
+        {
+            double[] row = lines[i + 1]
+            .Split(',')
+            .Select(s => double.Parse(s, CultureInfo.InvariantCulture))
+            .ToArray();
+            for (int j = 0; j < kernelSize; j++)
+            {
+                kernel[i, j] = row[j];
+            }
+        }
+        return (kernel, kernelSize);
     }
 
-    public static WriteableBitmap ApplyBlur(WriteableBitmap bitmap, int kernelSize = 3) 
-        => ApplyConvolutionFilter(bitmap, Kernels.BlurKernel, kernelSize);
-    public static WriteableBitmap ApplyGaussianBlur(WriteableBitmap bitmap, int kernelSize = 3) 
-        => ApplyConvolutionFilter(bitmap, Kernels.GaussianBlurKernel, kernelSize);
-    public static WriteableBitmap ApplySharpen(WriteableBitmap bitmap, int kernelSize = 3) 
-        => ApplyConvolutionFilter(bitmap, Kernels.SharpenKernel, kernelSize);
-    public static WriteableBitmap ApplyEdgeDetection(WriteableBitmap bitmap, int kernelSize = 3) 
-        => ApplyConvolutionFilter(bitmap, Kernels.EdgeDetectionKernel, kernelSize);
-    public static WriteableBitmap ApplyEmboss(WriteableBitmap bitmap, int kernelSize = 3) 
-        => ApplyConvolutionFilter(bitmap, Kernels.EmbossKernel, kernelSize);
-
+    private static byte Clamp(double value) => (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));
 }

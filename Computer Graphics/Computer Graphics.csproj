@@ -10,14 +10,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\LUTs\Blur.conv" />
     <None Remove="Resources\LUTs\Brightness_correction.filter" />
     <None Remove="Resources\LUTs\Contrast_enhancement.filter" />
+    <None Remove="Resources\LUTs\Edge_detection.conv" />
+    <None Remove="Resources\LUTs\Emboss.conv" />
     <None Remove="Resources\LUTs\Gamma_correction.filter" />
+    <None Remove="Resources\LUTs\Gaussian_blur.conv" />
     <None Remove="Resources\LUTs\Inversion.filter" />
+    <None Remove="Resources\LUTs\Sharpen.conv" />
     <None Remove="Resources\placeholder.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\LUTs\Blur.conv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Edge_detection.conv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Emboss.conv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\LUTs\Gamma_correction.filter">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -27,7 +41,13 @@
     <Content Include="Resources\LUTs\Contrast_enhancement.filter">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\LUTs\Gaussian_blur.conv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\LUTs\Inversion.filter">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\LUTs\Sharpen.conv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\placeholder.png">

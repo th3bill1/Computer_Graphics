@@ -108,10 +108,14 @@ public partial class MainWindow : Window
         MenuItem functionFiltersMenu = mainMenu.Items
             .OfType<MenuItem>()
             .FirstOrDefault(item => item.Header.ToString() == "Function filters");
+        MenuItem convolutionFiltersMenu = mainMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(item => item.Header.ToString() == "Convolution filters");
 
         if (functionFiltersMenu == null) return;
 
         string[] lutFiles = Directory.GetFiles(fullLUTPath, "*.filter");
+        string[] convFiles = Directory.GetFiles(fullLUTPath, "*.conv");
 
         foreach (string filePath in lutFiles)
         {
@@ -129,6 +133,25 @@ public partial class MainWindow : Window
 
             functionFiltersMenu.Items.Add(filterItem);
         }
+
+        if (convolutionFiltersMenu == null) return;
+
+        foreach (string filePath in convFiles)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+            MenuItem filterItem = new()
+            {
+                Header = fileName.Replace("_", " "),
+                Tag = filePath
+            };
+            filterItem.Click += (sender, e) =>
+            {
+                ApplyConvolutionFilter(filePath);
+            };
+
+            convolutionFiltersMenu.Items.Add(filterItem);
+        }
     }
 
     private void OpenFilterEditor_Click(object sender, RoutedEventArgs e)
@@ -137,44 +160,14 @@ public partial class MainWindow : Window
         editorWindow.Show();
     }
 
-    private void ApplyBlur_Click(object sender, RoutedEventArgs e)
+    private void ApplyConvolutionFilter(string filePath)
     {
         if (displayedImage != null)
         {
-            displayedImage = ConvolutionFilters.ApplyBlur(displayedImage);
+            var (kernel, size) = ConvolutionFilters.LoadConvolutionKernel(filePath);
+            displayedImage = ConvolutionFilters.ApplyConvolutionFilter(displayedImage, kernel, size);
             ImageDisplay.Source = displayedImage;
         }
     }
-    private void ApplyGaussianBlur_Click(object sender, RoutedEventArgs e)
-    {
-        if (displayedImage != null)
-        {
-            displayedImage = ConvolutionFilters.ApplyGaussianBlur(displayedImage);
-            ImageDisplay.Source = displayedImage;
-        }
-    }
-    private void ApplySharpen_Click(object sender, RoutedEventArgs e)
-    {
-        if (displayedImage != null)
-        {
-            displayedImage = ConvolutionFilters.ApplySharpen(displayedImage);
-            ImageDisplay.Source = displayedImage;
-        }
-    }
-    private void ApplyEdgeDetection_Click(object sender, RoutedEventArgs e)
-    {
-        if (displayedImage != null)
-        {
-            displayedImage = ConvolutionFilters.ApplyEdgeDetection(displayedImage);
-            ImageDisplay.Source = displayedImage;
-        }
-    }
-    private void ApplyEmboss_Click(object sender, RoutedEventArgs e)
-    {
-        if (displayedImage != null)
-        {
-            displayedImage = ConvolutionFilters.ApplyEmboss(displayedImage);
-            ImageDisplay.Source = displayedImage;
-        }
-    }
+
 }

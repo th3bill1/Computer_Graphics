@@ -17,13 +17,7 @@
                 <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
                     <MenuItem Header="Open Filter Editor" Click="OpenFilterEditor_Click" Margin="5"/>
                 </MenuItem>
-                <MenuItem Header="Convolution filters">
-                    <MenuItem Header="Blur" Click="ApplyBlur_Click"/>
-                    <MenuItem Header="GaussianBlur" Click="ApplyGaussianBlur_Click"/>
-                    <MenuItem Header="Sharpen" Click="ApplySharpen_Click"/>
-                    <MenuItem Header="Edge detection" Click="ApplyEdgeDetection_Click"/>
-                    <MenuItem Header="Emboss" Click="ApplyEmboss_Click"/>
-                </MenuItem>
+                <MenuItem Header="Convolution filters"/>
             </Menu>
             <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
         </DockPanel>
