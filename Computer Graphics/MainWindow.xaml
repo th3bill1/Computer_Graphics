@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Computer_Graphics"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Image Editor" Height="600" Width="800">
     <Grid>
-
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation= "Horizontal" HorizontalAlignment= "Center" Margin= "10" >
+                <Button Content= "Load Image" Click= "LoadImage_Click" Margin= "5" />
+                <Button Content= "Save Image" Click= "SaveImage_Click" Margin= "5" />
+                <Button Content= "Reset Image" Click= "ResetImage_Click" Margin= "5" />
+            </StackPanel>
+            <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
+        </DockPanel>
     </Grid>
 </Window>

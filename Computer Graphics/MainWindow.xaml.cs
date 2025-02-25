@@ -1,23 +1,20 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Reflection.Metadata;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 
 namespace Computer_Graphics
 {
     public partial class MainWindow : Window
     {
         private BitmapImage originalImage;
-        private WriteableBitmap displayedImage;
 
+        private BitmapImage displayedImage;
         public MainWindow()
         {
             InitializeComponent();
+            originalImage = new(new Uri("pack://application:,,,/Resources/placeholder.png"));
+            displayedImage = originalImage;
+            ImageDisplay.Source = displayedImage;
         }
 
         private void LoadImage_Click(object sender, RoutedEventArgs e)
@@ -30,7 +27,7 @@ namespace Computer_Graphics
             if (openFileDialog.ShowDialog() == true)
             {
                 originalImage = new BitmapImage(new Uri(openFileDialog.FileName));
-                displayedImage = new WriteableBitmap(originalImage);
+                displayedImage = new BitmapImage(new Uri(openFileDialog.FileName));
                 ImageDisplay.Source = displayedImage;
             }
         }
@@ -79,15 +76,7 @@ namespace Computer_Graphics
         {
             if (originalImage != null)
             {
-                displayedImage = new WriteableBitmap(originalImage);
-                ImageDisplay.Source = displayedImage;
-            }
-        }
-        private void ApplyInversion_Click(object sender, RoutedEventArgs e)
-        {
-            if (displayedImage != null)
-            {
-                displayedImage = FunctionFilters.Inversion(displayedImage);
+                displayedImage = originalImage;
                 ImageDisplay.Source = displayedImage;
             }
         }
