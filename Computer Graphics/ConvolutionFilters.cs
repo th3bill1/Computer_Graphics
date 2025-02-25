@@ -7,7 +7,7 @@ using System.Globalization;
 namespace Computer_Graphics;
 internal class ConvolutionFilters
 {
-    public static WriteableBitmap ApplyConvolutionFilter(WriteableBitmap bitmap, double[,] kernel, int kernelSize)
+    public static WriteableBitmap ApplyConvolutionFilter(WriteableBitmap bitmap, double[,] kernel, int rows, int cols)
     {
         int width = bitmap.PixelWidth;
         int height = bitmap.PixelHeight;
@@ -16,20 +16,23 @@ internal class ConvolutionFilters
         byte[] resultData = new byte[height * stride];
         bitmap.CopyPixels(pixelData, stride, 0);
 
-        int kernelOffset = kernelSize / 2;
+        int rowOffset = rows / 2;
+        int colOffset = cols / 2;
 
-        for (int y = kernelOffset; y < height - kernelOffset; y++)
+        for (int y = rowOffset; y < height - rowOffset; y++)
         {
-            for (int x = kernelOffset; x < width - kernelOffset; x++)
+            for (int x = colOffset; x < width - colOffset; x++)
             {
                 double blue = 0, green = 0, red = 0;
 
-                for (int ky = -kernelOffset; ky <= kernelOffset; ky++)
+                for (int ky = -rowOffset; ky <= rowOffset; ky++)
                 {
-                    for (int kx = -kernelOffset; kx <= kernelOffset; kx++)
+                    for (int kx = -colOffset; kx <= colOffset; kx++)
                     {
-                        int pixelIndex = ((y + ky) * stride) + ((x + kx) * 4);
-                        double kernelValue = kernel[ky + kernelOffset, kx + kernelOffset];
+                        int pixelX = x + kx;
+                        int pixelY = y + ky;
+                        int pixelIndex = (pixelY * stride) + (pixelX * 4);
+                        double kernelValue = kernel[ky + rowOffset, kx + colOffset];
 
                         blue += pixelData[pixelIndex] * kernelValue;
                         green += pixelData[pixelIndex + 1] * kernelValue;
@@ -51,27 +54,30 @@ internal class ConvolutionFilters
         return filteredBitmap;
     }
 
-    public static (double[,], int) LoadConvolutionKernel(string filePath)
+
+    public static (double[,], int, int) LoadConvolutionKernel(string filePath)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException("Convolution filter file not found!");
 
         string[] lines = File.ReadAllLines(filePath);
-        int kernelSize = int.Parse(lines[0]);
+        string[] sizeParts = lines[0].Split(',');
+        int rows = int.Parse(sizeParts[0]);
+        int cols = int.Parse(sizeParts[1]);
 
-        double[,] kernel = new double[kernelSize, kernelSize];
-        for (int i = 0; i < kernelSize; i++)
+
+        double[,] kernel = new double[rows, cols];
+        for (int i = 0; i < rows; i++)
         {
-            double[] row = lines[i + 1]
-            .Split(',')
-            .Select(s => double.Parse(s, CultureInfo.InvariantCulture))
-            .ToArray();
-            for (int j = 0; j < kernelSize; j++)
+            double[] rowValues = lines[i + 1].Split(',').Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
+            for (int j = 0; j < cols; j++)
             {
-                kernel[i, j] = row[j];
+                kernel[i, j] = rowValues[j];
             }
+
+
         }
-        return (kernel, kernelSize);
+        return (kernel, rows, cols);
     }
 
     private static byte Clamp(double value) => (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));

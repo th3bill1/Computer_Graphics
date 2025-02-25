@@ -164,8 +164,8 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            var (kernel, size) = ConvolutionFilters.LoadConvolutionKernel(filePath);
-            displayedImage = ConvolutionFilters.ApplyConvolutionFilter(displayedImage, kernel, size);
+            var (kernel, rows, cols) = ConvolutionFilters.LoadConvolutionKernel(filePath);
+            displayedImage = ConvolutionFilters.ApplyConvolutionFilter(displayedImage, kernel, rows, cols);
             ImageDisplay.Source = displayedImage;
         }
     }
