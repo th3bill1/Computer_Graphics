@@ -13,6 +13,12 @@
                 <Button Content= "Save Image" Click= "SaveImage_Click" Margin= "5" />
                 <Button Content= "Reset Image" Click= "ResetImage_Click" Margin= "5" />
             </StackPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Content="Inversion" Click="ApplyInversion_Click" Margin="5" />
+                <Button Content="Brightness" Click="ApplyBrightnessCorrection_Click" Margin="5" />
+                <Button Content="Contrast" Click="ApplyContrastEnhancement_Click" Margin="5" />
+                <Button Content="Gamma" Click="ApplyGammaCorrection_Click" Margin="5" />
+            </StackPanel>
             <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
         </DockPanel>
     </Grid>

@@ -8,12 +8,12 @@ namespace Computer_Graphics
     {
         private BitmapImage originalImage;
 
-        private BitmapImage displayedImage;
+        private WriteableBitmap displayedImage;
         public MainWindow()
         {
             InitializeComponent();
             originalImage = new(new Uri("pack://application:,,,/Resources/placeholder.png"));
-            displayedImage = originalImage;
+            displayedImage = new(originalImage);
             ImageDisplay.Source = displayedImage;
         }
 
@@ -27,7 +27,7 @@ namespace Computer_Graphics
             if (openFileDialog.ShowDialog() == true)
             {
                 originalImage = new BitmapImage(new Uri(openFileDialog.FileName));
-                displayedImage = new BitmapImage(new Uri(openFileDialog.FileName));
+                displayedImage = new WriteableBitmap(originalImage);
                 ImageDisplay.Source = displayedImage;
             }
         }
@@ -76,9 +76,42 @@ namespace Computer_Graphics
         {
             if (originalImage != null)
             {
-                displayedImage = originalImage;
+                displayedImage = new WriteableBitmap(originalImage);
                 ImageDisplay.Source = displayedImage;
             }
         }
+        private void ApplyInversion_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = FunctionFilters.Inversion(displayedImage);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyBrightnessCorrection_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = FunctionFilters.AdjustBrightness(displayedImage, 10);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyContrastEnhancement_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = FunctionFilters.AdjustContrast(displayedImage, 10);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        private void ApplyGammaCorrection_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage != null)
+            {
+                displayedImage = FunctionFilters.AdjustGamma(displayedImage, 1.5);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+
     }
 }
