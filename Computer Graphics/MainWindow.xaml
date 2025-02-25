@@ -15,7 +15,7 @@
                     <MenuItem Header="_Save" Click="SaveImage_Click"/>
                 </MenuItem>
                 <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
-                    <Button Content="Open Filter Editor" Click="OpenFilterEditor_Click" Margin="5"/>
+                    <MenuItem Header="Open Filter Editor" Click="OpenFilterEditor_Click" Margin="5"/>
                 </MenuItem>
                 <MenuItem Header="Convolution filters">
                     <MenuItem Header="Blur" Click="ApplyBlur_Click"/>

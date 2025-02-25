@@ -1,21 +1,70 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Win32;
-using System.Windows.Media.Imaging;
 
 namespace Computer_Graphics;
 
 public partial class FilterEditorWindow : Window
 {
-    private List<Point> functionPoints = [];
+    private List<Point> functionPoints = new();
     private Polyline functionGraph = new();
+    private const string LUT_FOLDER = "Resources/LUTs/";
+    private string currentFilterName = "New_Filter";
+    private bool isNewFilter = true;
 
     public FilterEditorWindow()
     {
         InitializeComponent();
+        LoadFilters();
+        SelectNewFilter();
+    }
+
+    private void LoadFilters()
+    {
+        string fullLUTPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LUT_FOLDER);
+
+        if (!Directory.Exists(fullLUTPath))
+        {
+            Directory.CreateDirectory(fullLUTPath);
+            return;
+        }
+
+        FilterSelectionComboBox.Items.Clear();
+        FilterSelectionComboBox.Items.Add("New Filter");
+
+        string[] lutFiles = Directory.GetFiles(fullLUTPath, "*.filter");
+        foreach (string filePath in lutFiles)
+        {
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(filePath).Replace("_", " ");
+            FilterSelectionComboBox.Items.Add(fileName);
+        }
+
+        FilterSelectionComboBox.SelectedIndex = 0;
+    }
+
+    private void FilterSelectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (FilterSelectionComboBox.SelectedItem != null)
+        {
+            var selectedFilter = FilterSelectionComboBox.SelectedItem.ToString();
+
+            if (selectedFilter == "New Filter")
+            {
+                SelectNewFilter();
+            }
+            else
+            {
+                LoadFilter(selectedFilter.Replace(" ", "_") + ".filter");
+            }
+        }
+    }
+
+    private void SelectNewFilter()
+    {
+        isNewFilter = true;
+        currentFilterName = "New_Filter";
         InitializeFunctionGraph();
     }
 
@@ -25,9 +74,8 @@ public partial class FilterEditorWindow : Window
         functionPoints =
         [
             new Point(0, 255),
-            new Point(255, 0) 
+            new Point(255, 0)
         ];
-
         DrawFunction();
     }
 
@@ -53,6 +101,45 @@ public partial class FilterEditorWindow : Window
         }
     }
 
+    private void LoadFilter(string fileName)
+    {
+        string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LUT_FOLDER, fileName);
+        if (!File.Exists(filePath)) return;
+
+        functionPoints.Clear();
+        using (StreamReader reader = new StreamReader(filePath))
+        {
+            var line = reader.ReadLine();
+            byte[] lut = line.Split(',').Select(byte.Parse).ToArray();
+
+            for (int x = 0; x < lut.Length; x++)
+            {
+                functionPoints.Add(new Point(x, 255 - lut[x]));
+            }
+        }
+
+        currentFilterName = System.IO.Path.GetFileNameWithoutExtension(fileName);
+        isNewFilter = false;
+        DrawFunction();
+    }
+
+    private void ApplyFilter_Click(object sender, RoutedEventArgs e)
+    {
+        if (MainWindow.Instance?.DisplayedImage == null) return;
+
+        byte[] lut = new byte[256];
+        for (int i = 0; i < 256; i++)
+        {
+            lut[i] = ApplyFunction((byte)i);
+        }
+
+        string tempLUTPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LUT_FOLDER, currentFilterName + ".filter");
+        File.WriteAllText(tempLUTPath, string.Join(",", lut));
+
+        MainWindow.Instance.DisplayedImage = FunctionFilters.ApplyFunctionFromFile(MainWindow.Instance.DisplayedImage, tempLUTPath);
+        MainWindow.Instance.ImageDisplay.Source = MainWindow.Instance.DisplayedImage;
+    }
+
     private byte ApplyFunction(byte input)
     {
         for (int i = 0; i < functionPoints.Count - 1; i++)
@@ -69,38 +156,33 @@ public partial class FilterEditorWindow : Window
         return input;
     }
 
-    private void ApplyFilter_Click(object sender, RoutedEventArgs e)
-    {
-        if (MainWindow.Instance?.DisplayedImage == null) return;
-
-        WriteableBitmap bitmap = MainWindow.Instance.DisplayedImage;
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        bitmap.CopyPixels(pixelData, stride, 0);
-
-        for (int i = 0; i < pixelData.Length; i += 4)
-        {
-            pixelData[i] = ApplyFunction(pixelData[i]);
-            pixelData[i + 1] = ApplyFunction(pixelData[i + 1]);
-            pixelData[i + 2] = ApplyFunction(pixelData[i + 2]);
-        }
-
-        WriteableBitmap filteredBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);
-        filteredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
-        MainWindow.Instance.DisplayedImage = filteredBitmap;
-        MainWindow.Instance.ImageDisplay.Source = filteredBitmap;
-    }
-
     private void SaveFilter_Click(object sender, RoutedEventArgs e)
     {
-        SaveFileDialog saveDialog = new SaveFileDialog { Filter = "Filter Files|*.filter" };
-        if (saveDialog.ShowDialog() == true)
+        if (isNewFilter)
         {
-            using StreamWriter writer = new StreamWriter(saveDialog.FileName);
-            foreach (var p in functionPoints)
-                writer.WriteLine($"{p.X} {p.Y}");
+            string inputName = Microsoft.VisualBasic.Interaction.InputBox("Enter filter name:", "Save Filter", "My Filter");
+
+            if (string.IsNullOrWhiteSpace(inputName))
+            {
+                MessageBox.Show("Filter name cannot be empty!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            currentFilterName = inputName.Replace(" ", "_");
+            isNewFilter = false;
         }
+
+        byte[] lut = new byte[256];
+        for (int i = 0; i < 256; i++)
+        {
+            lut[i] = ApplyFunction((byte)i);
+        }
+
+        string savePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LUT_FOLDER, currentFilterName + ".filter");
+        File.WriteAllText(savePath, string.Join(",", lut));
+
+        MessageBox.Show($"Filter saved as: {currentFilterName}.filter", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        LoadFilters();
     }
 }

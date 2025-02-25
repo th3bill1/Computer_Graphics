@@ -7,14 +7,18 @@
         mc:Ignorable="d"
         Title="FilterEditor" Height="450" Width="800">
     <Grid>
-        <Border BorderBrush="Black" BorderThickness="1" Width="256" Height="256" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20">
-            <Canvas Name="GraphCanvas" Background="White" Width="256" Height="256" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
-                <Polyline Name="FunctionGraph" Stroke="Blue" StrokeThickness="2"/>
-            </Canvas>
-        </Border>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-            <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="5"/>
-            <Button Content="Save Filter" Click="SaveFilter_Click" Margin="5"/>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+            <ComboBox x:Name="FilterSelectionComboBox" Width="200" SelectionChanged="FilterSelectionComboBox_SelectionChanged" Margin="10"/>
+            <Border BorderBrush="Black" BorderThickness="1" Width="256" Height="256" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+                <Canvas Name="GraphCanvas" Background="White" Width="256" Height="256" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
+                    <Polyline Name="FunctionGraph" Stroke="Blue" StrokeThickness="2"/>
+                </Canvas>
+            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="5"/>
+                <Button Content="Save Filter" Click="SaveFilter_Click" Margin="5"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
+
 </Window>
