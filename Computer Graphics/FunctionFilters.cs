@@ -59,9 +59,9 @@ internal class FunctionFilters
 
         for (int i = 0; i < pixelData.Length; i += 4)
         {
-            pixelData[i] = Clamp(factor * (pixelData[i] - 128) + 128);       // Blue
-            pixelData[i + 1] = Clamp(factor * (pixelData[i + 1] - 128) + 128); // Green
-            pixelData[i + 2] = Clamp(factor * (pixelData[i + 2] - 128) + 128); // Red
+            pixelData[i] = Clamp(factor * (pixelData[i] - 128) + 128);
+            pixelData[i + 1] = Clamp(factor * (pixelData[i + 1] - 128) + 128);
+            pixelData[i + 2] = Clamp(factor * (pixelData[i + 2] - 128) + 128);
         }
 
         WriteableBitmap contrastBitmap = new WriteableBitmap(width, height, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgra32, null);

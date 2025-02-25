@@ -65,10 +65,8 @@ namespace Computer_Graphics
                 }
 
                 encoder.Frames.Add(BitmapFrame.Create(displayedImage));
-                using (var fileStream = System.IO.File.Create(saveFileDialog.FileName))
-                {
-                    encoder.Save(fileStream);
-                }
+                using var fileStream = System.IO.File.Create(saveFileDialog.FileName);
+                encoder.Save(fileStream);
             }
         }
 
