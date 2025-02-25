@@ -15,9 +15,11 @@
                     <MenuItem Header="_Save" Click="SaveImage_Click"/>
                 </MenuItem>
                 <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
-                    <MenuItem Header="Open Filter Editor" Click="OpenFilterEditor_Click" Margin="5"/>
+                    <MenuItem Header="Open Filter Editor" Click="OpenFunctionFilterEditor_Click" Margin="5"/>
                 </MenuItem>
-                <MenuItem Header="Convolution filters"/>
+                <MenuItem Header="Convolution filters">
+                    <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>
+                </MenuItem>
             </Menu>
             <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
         </DockPanel>

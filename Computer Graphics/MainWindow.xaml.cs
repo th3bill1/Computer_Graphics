@@ -154,9 +154,14 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OpenFilterEditor_Click(object sender, RoutedEventArgs e)
+    private void OpenFunctionFilterEditor_Click(object sender, RoutedEventArgs e)
     {
-        FilterEditorWindow editorWindow = new();
+        FunctionFilterEditorWindow editorWindow = new();
+        editorWindow.Show();
+    }
+    private void OpenConvolutionFilterEditor_Click(object sender, RoutedEventArgs e)
+    {
+        ConvolutionFilterEditorWindow editorWindow = new();
         editorWindow.Show();
     }
 
@@ -165,6 +170,15 @@ public partial class MainWindow : Window
         if (displayedImage != null)
         {
             var (kernel, rows, cols) = ConvolutionFilters.LoadConvolutionKernel(filePath);
+            displayedImage = ConvolutionFilters.ApplyConvolutionFilter(displayedImage, kernel, rows, cols);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+
+    public void ApplyConvolutionFilter(double[,] kernel, int rows, int cols)
+    {
+        if (displayedImage != null)
+        {
             displayedImage = ConvolutionFilters.ApplyConvolutionFilter(displayedImage, kernel, rows, cols);
             ImageDisplay.Source = displayedImage;
         }

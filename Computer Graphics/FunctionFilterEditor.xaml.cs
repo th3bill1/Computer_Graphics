@@ -6,7 +6,7 @@ using System.Windows.Shapes;
 
 namespace Computer_Graphics;
 
-public partial class FilterEditorWindow : Window
+public partial class FunctionFilterEditorWindow : Window
 {
     private List<Point> functionPoints = new();
     private Polyline functionGraph = new();
@@ -14,7 +14,7 @@ public partial class FilterEditorWindow : Window
     private string currentFilterName = "New_Filter";
     private bool isNewFilter = true;
 
-    public FilterEditorWindow()
+    public FunctionFilterEditorWindow()
     {
         InitializeComponent();
         LoadFilters();
