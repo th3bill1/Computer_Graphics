@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Computer_Graphics.ConvolutionFilterEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Convolution Filter Editor" Height="500" Width="600">
+        Title="Convolution Filter Editor" Height="400" Width="500">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10">
             <ComboBox x:Name="FilterSelectionComboBox" Width="200" SelectionChanged="FilterSelectionComboBox_SelectionChanged" />
@@ -11,22 +11,10 @@
                 <TextBlock Text="Columns:" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <ComboBox x:Name="ColumnsComboBox" Width="50" SelectionChanged="KernelSizeChanged"/>
             </StackPanel>
-            <DataGrid x:Name="KernelGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="False"
-                      CanUserResizeRows="False" CanUserSortColumns="False" HeadersVisibility="None"
-                      GridLinesVisibility="All" IsReadOnly="False" />
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="Divisor:" VerticalAlignment="Center"/>
-                <TextBox x:Name="DivisorTextBox" Width="60" TextChanged="DivisorChanged"/>
-                <CheckBox x:Name="AutoComputeDivisorCheckBox" Content="Auto" Checked="AutoComputeDivisorChecked"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="Offset:" VerticalAlignment="Center"/>
-                <TextBox x:Name="OffsetTextBox" Width="60"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="Anchor Point:" VerticalAlignment="Center"/>
-                <TextBox x:Name="AnchorPointTextBox" Width="60"/>
-            </StackPanel>
+            <DataGrid x:Name="KernelGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                      CanUserResizeColumns="False" CanUserResizeRows="False"
+                      CanUserSortColumns="False" HeadersVisibility="None"
+                      GridLinesVisibility="All" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="5"/>
                 <Button Content="Save Filter" Click="SaveFilter_Click" Margin="5"/>

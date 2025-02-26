@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Globalization;
@@ -9,8 +12,8 @@ namespace Computer_Graphics
     {
         private const string CONV_FOLDER = "Resources/LUTs/";
         private int rows = 3, cols = 3;
-        private double[,] kernel;
-        private int anchorRow, anchorCol;
+        private List<List<double>> kernel;
+
 
         public ConvolutionFilterEditorWindow()
         {
@@ -31,13 +34,16 @@ namespace Computer_Graphics
 
         private void InitializeKernel()
         {
-            kernel = new double[rows, cols];
+            kernel = new List<List<double>>();
             for (int i = 0; i < rows; i++)
+            {
+                List<double> row = new();
                 for (int j = 0; j < cols; j++)
-                    kernel[i, j] = 0;
+                    row.Add(0);
+                kernel.Add(row);
+            }
+            UpdateKernelGrid();
 
-            anchorRow = rows / 2;
-            anchorCol = cols / 2;
 
             UpdateKernelGrid();
         }
@@ -45,23 +51,22 @@ namespace Computer_Graphics
         private void UpdateKernelGrid()
         {
             KernelGrid.Columns.Clear();
+            KernelGrid.ItemsSource = null;
             KernelGrid.Items.Clear();
 
             for (int j = 0; j < cols; j++)
-                KernelGrid.Columns.Add(new DataGridTextColumn
-                {
-                    Header = j.ToString(),
-                    Binding = new System.Windows.Data.Binding($"[{j}]")
-                });
-
-            for (int i = 0; i < rows; i++)
             {
-                double[] rowValues = new double[cols];
-                for (int j = 0; j < cols; j++)
-                    rowValues[j] = kernel[i, j];
-
-                KernelGrid.Items.Add(rowValues);
+                DataGridTextColumn col = new()
+                {
+                    Header = "",
+                    Binding = new System.Windows.Data.Binding($"[{j}]") { Mode = System.Windows.Data.BindingMode.TwoWay },
+                    IsReadOnly = false
+                };
+                KernelGrid.Columns.Add(col);
             }
+
+            KernelGrid.ItemsSource = kernel;
+
         }
 
         private void KernelSizeChanged(object sender, SelectionChangedEventArgs e)
@@ -72,23 +77,6 @@ namespace Computer_Graphics
                 cols = newCols;
                 InitializeKernel();
             }
-        }
-
-        private void DivisorChanged(object sender, TextChangedEventArgs e)
-        {
-            if (AutoComputeDivisorCheckBox.IsChecked == true)
-                AutoComputeDivisor();
-        }
-
-        private void AutoComputeDivisorChecked(object sender, RoutedEventArgs e)
-        {
-            AutoComputeDivisor();
-        }
-
-        private void AutoComputeDivisor()
-        {
-            double sum = kernel.Cast<double>().Sum();
-            DivisorTextBox.Text = (sum == 0) ? "1" : sum.ToString(CultureInfo.InvariantCulture);
         }
 
         private void LoadFilters()
@@ -132,20 +120,34 @@ namespace Computer_Graphics
             rows = int.Parse(sizeParts[0]);
             cols = int.Parse(sizeParts[1]);
 
-            kernel = new double[rows, cols];
+            kernel = new List<List<double>>();
 
             for (int i = 0; i < rows; i++)
             {
-                double[] rowValues = lines[i + 1].Split(',').Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
-                for (int j = 0; j < cols; j++)
-                    kernel[i, j] = rowValues[j];
+                List<double> rowValues = lines[i + 1].Split(',')
+                    .Select(s => double.Parse(s, CultureInfo.InvariantCulture))
+                    .ToList();
+                kernel.Add(rowValues);
             }
 
             UpdateKernelGrid();
         }
 
+
         private void SaveFilter_Click(object sender, RoutedEventArgs e)
         {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (double.TryParse(KernelGrid.Items[i].GetType().GetProperty($"Item[{j}]")?.GetValue(KernelGrid.Items[i])?.ToString(),
+                                        NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
+                    {
+                        kernel[i][j] = value;
+                    }
+                }
+            }
+
             string inputName = Microsoft.VisualBasic.Interaction.InputBox("Enter filter name:", "Save Filter", "My Filter");
             if (string.IsNullOrWhiteSpace(inputName)) return;
 
@@ -154,7 +156,7 @@ namespace Computer_Graphics
 
             List<string> lines = new() { $"{rows},{cols}" };
             for (int i = 0; i < rows; i++)
-                lines.Add(string.Join(",", Enumerable.Range(0, cols).Select(j => kernel[i, j].ToString(CultureInfo.InvariantCulture))));
+                lines.Add(string.Join(",", Enumerable.Range(0, cols).Select(j => kernel[i][j].ToString(CultureInfo.InvariantCulture))));
 
             File.WriteAllLines(filePath, lines);
             LoadFilters();
@@ -162,7 +164,12 @@ namespace Computer_Graphics
 
         private void ApplyFilter_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Instance?.ApplyConvolutionFilter(kernel, rows, cols);
+            double[,] kernelArray = new double[rows, cols];
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    kernelArray[i, j] = kernel[i][j];
+
+            MainWindow.Instance?.ApplyConvolutionFilter(kernelArray, rows, cols);
         }
     }
 }
