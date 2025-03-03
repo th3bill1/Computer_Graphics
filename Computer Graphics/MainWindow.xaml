@@ -21,7 +21,15 @@
                     <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>
                 </MenuItem>
             </Menu>
-            <Image Name= "ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Name="ImageOriginal" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" Margin="15"/>
+                <Image Grid.Column="1" Name="ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" Margin="15"/>
+            </Grid>
+            
         </DockPanel>
     </Grid>
 </Window>

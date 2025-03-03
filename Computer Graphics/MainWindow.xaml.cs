@@ -27,6 +27,7 @@ public partial class MainWindow : Window
         originalImage = new(new Uri(PLACEHOLDER_PATH));
         displayedImage = new(originalImage);
         ImageDisplay.Source = displayedImage;
+        ImageOriginal.Source = originalImage;
         Instance = this;
 
         LoadLUTFilters();
@@ -44,6 +45,7 @@ public partial class MainWindow : Window
             originalImage = new BitmapImage(new Uri(openFileDialog.FileName));
             displayedImage = new WriteableBitmap(originalImage);
             ImageDisplay.Source = displayedImage;
+            ImageOriginal.Source = displayedImage;
         }
     }
 
@@ -183,5 +185,4 @@ public partial class MainWindow : Window
             ImageDisplay.Source = displayedImage;
         }
     }
-
 }

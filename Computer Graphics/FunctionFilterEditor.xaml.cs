@@ -55,6 +55,11 @@ namespace Computer_Graphics
                 {
                     point.X = 255;
                 }
+                var conflicts = FunctionPointsView.Where(p => p.X == point.X);
+                foreach(EditablePoint conflict in conflicts)
+                {
+                    if (conflict != point) FunctionPointsView.Remove(conflict);
+                }
             }
 
             DrawFunction();
