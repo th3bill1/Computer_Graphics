@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Computer_Graphics"
         mc:Ignorable="d"
-        Title="Image Editor" Height="600" Width="800">
+        Title="Image Editor" Height="600" Width="800"
+        WindowState="Maximized">
     <Grid>
         <DockPanel>
             <Menu x:Name="MainMenu" DockPanel.Dock="Top">

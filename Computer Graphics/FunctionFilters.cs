@@ -12,8 +12,41 @@ namespace Computer_Graphics
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Filter file not found!");
 
-            byte[] lut = File.ReadAllText(filePath).Split(',').Select(byte.Parse).ToArray();
-            return value => lut[value];
+            List<(byte input, byte output)> keyPoints = [];
+
+            foreach (string line in File.ReadAllLines(filePath))
+            {
+                string[] parts = line.Split(',');
+                if (parts.Length == 2 &&
+                    byte.TryParse(parts[0], out byte input) &&
+                    byte.TryParse(parts[1], out byte output))
+                {
+                    keyPoints.Add((input, output));
+                }
+            }
+
+            if (!keyPoints.Any(p => p.input == 0)) keyPoints.Insert(0, (0, 0));
+            if (!keyPoints.Any(p => p.input == 255)) keyPoints.Add((255, 255));
+
+            keyPoints = keyPoints.OrderBy(p => p.input).ToList();
+
+            return value => Interpolate(value, keyPoints);
+        }
+
+        private static byte Interpolate(byte value, List<(byte input, byte output)> keyPoints)
+        {
+            for (int i = 0; i < keyPoints.Count - 1; i++)
+            {
+                var (x1, y1) = keyPoints[i];
+                var (x2, y2) = keyPoints[i + 1];
+
+                if (value >= x1 && value <= x2)
+                {
+                    double ratio = (value - x1) / (double)(x2 - x1);
+                    return (byte)(y1 + ratio * (y2 - y1));
+                }
+            }
+            return value;
         }
 
         public static WriteableBitmap ApplyFunctionFromFile(WriteableBitmap bitmap, string filePath)

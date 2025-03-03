@@ -3,22 +3,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Computer_Graphics"
         mc:Ignorable="d"
-        Title="FilterEditor" Height="450" Width="800">
+        Title="FilterEditor" Height="900" Width="1600"
+        WindowState="Maximized">
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-            <ComboBox x:Name="FilterSelectionComboBox" Width="200" SelectionChanged="FilterSelectionComboBox_SelectionChanged" Margin="10"/>
-            <Border BorderBrush="Black" BorderThickness="1" Width="256" Height="256" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
-                <Canvas Name="GraphCanvas" Background="White" Width="256" Height="256" MouseLeftButtonDown="Canvas_MouseLeftButtonDown">
-                    <Polyline Name="FunctionGraph" Stroke="Blue" StrokeThickness="2"/>
-                </Canvas>
-            </Border>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Grid.Column="0">
+            <ComboBox x:Name="FilterSelectionComboBox" Width="200" SelectionChanged="FilterSelectionComboBox_SelectionChanged"/>
+            <Canvas Name="GraphCanvas" Width="510" Height="510" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" Margin="10">
+                <Canvas.Background>
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,2,2"
+                                  ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing>
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry Rect="0,0,50,50"/>
+                                </GeometryDrawing.Geometry>
+                                <GeometryDrawing.Pen>
+                                    <Pen Brush="Gray" Thickness="1"/>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Canvas.Background>
+                <Polyline Name="FunctionGraph" Stroke="Blue" StrokeThickness="2"/>
+            </Canvas>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button Content="Apply Filter" Click="ApplyFilter_Click" Margin="5"/>
                 <Button Content="Save Filter" Click="SaveFilter_Click" Margin="5"/>
             </StackPanel>
         </StackPanel>
-    </Grid>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <DataGrid x:Name="PointsDataGrid"
+                      ItemsSource="{Binding FunctionPointsView}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      Margin="10"
+                      Height="400"
+                      Width="250"
+                      SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="X" Binding="{Binding DisplayX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                    <DataGridTextColumn Header="Y" Binding="{Binding DisplayY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
 
+            <Button Content="Delete Selected Point"
+                    Click="DeletePoint_Click"
+                    Margin="5"
+                    Width="200"
+                    HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
 </Window>

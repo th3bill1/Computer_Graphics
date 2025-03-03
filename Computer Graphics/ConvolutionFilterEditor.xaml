@@ -1,7 +1,8 @@
 ﻿<Window x:Class="Computer_Graphics.ConvolutionFilterEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Convolution Filter Editor" Height="400" Width="500">
+        Title="Convolution Filter Editor" Height="400" Width="500"
+        WindowState="Maximized">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10">
             <ComboBox x:Name="FilterSelectionComboBox" Width="200" SelectionChanged="FilterSelectionComboBox_SelectionChanged" />
