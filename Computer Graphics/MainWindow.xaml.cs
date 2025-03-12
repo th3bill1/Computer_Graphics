@@ -185,4 +185,14 @@ public partial class MainWindow : Window
             ImageDisplay.Source = displayedImage;
         }
     }
+    private void ApplyMedianFilter_Click(object sender, EventArgs e)
+    {
+        string input = Microsoft.VisualBasic.Interaction.InputBox("Enter an integer value for N:", "Enter N", "3");
+
+        if (int.TryParse(input, out int n))
+        {
+            displayedImage = MedianFilter.ApplyMedianFilter(displayedImage, n);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
 }

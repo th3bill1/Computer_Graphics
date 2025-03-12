@@ -20,6 +20,7 @@
                 <MenuItem Header="Convolution filters">
                     <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>
                 </MenuItem>
+                <MenuItem Header="Median filter" Click="ApplyMedianFilter_Click" Margin="5"/>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>
