@@ -16,6 +16,10 @@
                 </MenuItem>
                 <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
                     <MenuItem Header="Open Filter Editor" Click="OpenFunctionFilterEditor_Click" Margin="5"/>
+                    <MenuItem Header="Greyscale">
+                        <MenuItem Header="Apply" Click="ConvertToGreyscale_Click" Margin="5"/>
+                        <MenuItem Header="Edit Parameters" Click="OpenGreyscaleEditor_Click" Margin="5"/>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Convolution filters">
                     <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>

@@ -1,0 +1,26 @@
+﻿<Window x:Class="Computer_Graphics.GreyscaleParameterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Grayscale Parameters" Height="200" Width="300">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Red Weight:" VerticalAlignment="Center"/>
+        <TextBox Name="RedWeightBox" Grid.Row="0" Width="100" HorizontalAlignment="Right"/>
+
+        <TextBlock Text="Green Weight:" Grid.Row="1" VerticalAlignment="Center"/>
+        <TextBox Name="GreenWeightBox" Grid.Row="1" Width="100" HorizontalAlignment="Right"/>
+
+        <TextBlock Text="Blue Weight:" Grid.Row="2" VerticalAlignment="Center"/>
+        <TextBox Name="BlueWeightBox" Grid.Row="2" Width="100" HorizontalAlignment="Right"/>
+
+        <Button Content="Save" Grid.Row="3" Click="SaveButton_Click" Width="80" HorizontalAlignment="Center" Margin="10"/>
+        <Button Content="Apply" Grid.Row="4" Click="ApplyButton_Click" Width="80" HorizontalAlignment="Center" Margin="10"/>
+    </Grid>
+</Window>

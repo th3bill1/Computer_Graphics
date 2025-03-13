@@ -195,4 +195,20 @@ public partial class MainWindow : Window
             ImageDisplay.Source = displayedImage;
         }
     }
+    private void ConvertToGreyscale_Click(object sender, EventArgs e)
+    {
+        if (displayedImage != null)
+        {
+            var (rWeight, gWeight, bWeight) = GreyscaleParameterWindow.LoadParametersFromFile();
+
+            displayedImage = GreyscaleConversion.ConvertToGrayscale(displayedImage, rWeight, gWeight, bWeight);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+
+    private void OpenGreyscaleEditor_Click(object sender, EventArgs e)
+    {
+        GreyscaleParameterWindow parameterWindow = new GreyscaleParameterWindow();
+        parameterWindow.ShowDialog();
+    }
 }
