@@ -211,4 +211,51 @@ public partial class MainWindow : Window
         GreyscaleParameterWindow parameterWindow = new GreyscaleParameterWindow();
         parameterWindow.ShowDialog();
     }
+    private void ApplyRandomDithering_Click(object sender, EventArgs e) 
+    {
+        string input = Microsoft.VisualBasic.Interaction.InputBox("Enter number of shades:", "Enter N", "3");
+
+        if (int.TryParse(input, out int n) && n > 1)
+        {
+            displayedImage = Dithering.ApplyRandomDithering(displayedImage, n);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+    private void ApplyAvarageDithering_Click(object sender, EventArgs e)
+    {
+        string input = Microsoft.VisualBasic.Interaction.InputBox("Enter number of shades:", "Enter N", "3");
+
+        if (int.TryParse(input, out int n) && n > 1)
+        {
+            displayedImage = Dithering.ApplyAverageDithering(displayedImage, n);
+            ImageDisplay.Source = displayedImage;
+        }
+    }
+    private void ApplyOrderedDithering_Click(object sender, EventArgs e)
+    {
+        //change error handling
+        if (displayedImage != null)
+        {
+            string shadesInput = Microsoft.VisualBasic.Interaction.InputBox("Enter number of shades of grey (2-256):", "Ordered Dithering", "4");
+            if (!int.TryParse(shadesInput, out int numShades) || numShades < 2 || numShades > 256)
+            {
+                MessageBox.Show("Invalid input. Please enter a number between 2 and 256.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            string sizeInput = Microsoft.VisualBasic.Interaction.InputBox("Enter Bayer matrix size (2, 3, 4, or 6):", "Ordered Dithering", "4");
+            if (!int.TryParse(sizeInput, out int matrixSize) || (matrixSize != 2 && matrixSize != 3 && matrixSize != 4 && matrixSize != 6))
+            {
+                MessageBox.Show("Invalid input. Please enter 2, 3, 4, or 6.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            displayedImage = Dithering.ApplyOrderedDithering(displayedImage, numShades, matrixSize);
+            ImageDisplay.Source = displayedImage;
+        }
+        else
+        {
+            MessageBox.Show("No image loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
 }

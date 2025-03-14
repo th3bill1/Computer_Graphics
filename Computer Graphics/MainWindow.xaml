@@ -25,6 +25,11 @@
                     <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>
                 </MenuItem>
                 <MenuItem Header="Median filter" Click="ApplyMedianFilter_Click" Margin="5"/>
+                <MenuItem Header="Dithering" Margin="5">
+                    <MenuItem Header="Random" Click="ApplyRandomDithering_Click"/>
+                    <MenuItem Header="Avarage" Click="ApplyAvarageDithering_Click"/>
+                    <MenuItem Header="Ordered" Click="ApplyOrderedDithering_Click"/>
+                </MenuItem>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>
