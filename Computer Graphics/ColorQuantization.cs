@@ -46,8 +46,10 @@ namespace Computer_Graphics
             return (byte)(Math.Round((double)color / step) * step);
         }
 
-        public static WriteableBitmap ApplyPopularityQuantization(WriteableBitmap source, int numColors)
+        public static WriteableBitmap ApplyPopularityQuantization(WriteableBitmap source, int numColors, int subdivisions = 4)
         {
+            //Instead of jus tpicking the most popular colors i first divide the spectrum and choose bins with most pixels in them
+            //This is because my tests on previous version on blue-heavy images produced terrible outputs
             int width = source.PixelWidth;
             int height = source.PixelHeight;
             int stride = width * 4;
@@ -55,25 +57,47 @@ namespace Computer_Graphics
 
             source.CopyPixels(pixelData, stride, 0);
 
-            Dictionary<int, int> colorFrequency = new();
+            int binSize = 256 / subdivisions;
+
+            Dictionary<(int, int, int), List<int>> cuboidColorMap = [];
 
             for (int i = 0; i < pixelData.Length; i += 4)
             {
-                int color = (pixelData[i + 2] << 16) | (pixelData[i + 1] << 8) | pixelData[i];
-                if (colorFrequency.ContainsKey(color))
-                    colorFrequency[color]++;
-                else
-                    colorFrequency[color] = 1;
+                int r = pixelData[i + 2];
+                int g = pixelData[i + 1];
+                int b = pixelData[i];
+
+                int rBin = r / binSize;
+                int gBin = g / binSize;
+                int bBin = b / binSize;
+                var cuboidKey = (rBin, gBin, bBin);
+
+                if (!cuboidColorMap.ContainsKey(cuboidKey))
+                    cuboidColorMap[cuboidKey] = [];
+
+                int packedColor = (r << 16) | (g << 8) | b;
+                cuboidColorMap[cuboidKey].Add(packedColor);
             }
 
-            var mostFrequentColors = colorFrequency.OrderByDescending(c => c.Value)
-                                                   .Take(numColors)
-                                                   .Select(c => (
-                                                        (byte)(c.Key & 0xFF),
-                                                        (byte)((c.Key >> 8) & 0xFF),
-                                                        (byte)((c.Key >> 16) & 0xFF)
-                                                    ))
-                                                   .ToArray();
+            var selectedCuboids = cuboidColorMap.OrderByDescending(c => c.Value.Count)
+                                                .Take(numColors)
+                                                .Select(c => c.Key)
+                                                .ToList();
+
+            var mostFrequentColors = selectedCuboids.Select(cuboid =>
+            {
+                var colorsInCuboid = cuboidColorMap[cuboid];
+
+                var mostFrequentColor = colorsInCuboid.GroupBy(color => color)
+                                                      .OrderByDescending(group => group.Count())
+                                                      .First().Key;
+
+                return (
+                    (byte)(mostFrequentColor & 0xFF),
+                    (byte)((mostFrequentColor >> 8) & 0xFF),
+                    (byte)((mostFrequentColor >> 16) & 0xFF)
+                );
+            }).ToArray();
 
             for (int i = 0; i < pixelData.Length; i += 4)
             {
@@ -93,6 +117,7 @@ namespace Computer_Graphics
 
             return quantizedBitmap;
         }
+
         public static WriteableBitmap ApplyKMeansQuantization(WriteableBitmap source, int numClusters)
         {
             int width = source.PixelWidth;
@@ -102,7 +127,7 @@ namespace Computer_Graphics
 
             source.CopyPixels(pixelData, stride, 0);
 
-            List<(byte R, byte G, byte B)> pixels = new();
+            List<(byte R, byte G, byte B)> pixels = [];
             for (int i = 0; i < pixelData.Length; i += 4)
                 pixels.Add((pixelData[i + 2], pixelData[i + 1], pixelData[i]));
 
@@ -120,10 +145,11 @@ namespace Computer_Graphics
                 {
                     var closestCluster = clusters.OrderBy(c => ColorDistance(pixel, c)).First();
 
-                    if (!pixelClusterMapping.ContainsKey(pixel) || pixelClusterMapping[pixel] != closestCluster)
+                    if (!pixelClusterMapping.TryGetValue(pixel, out var value) || value != closestCluster)
                     {
                         changed = true;
-                        pixelClusterMapping[pixel] = closestCluster;
+                        value = closestCluster;
+                        pixelClusterMapping[pixel] = value;
                     }
 
                     newClusters[closestCluster].Add(pixel);
@@ -142,11 +168,11 @@ namespace Computer_Graphics
             for (int i = 0; i < pixelData.Length; i += 4)
             {
                 var originalColor = (pixelData[i + 2], pixelData[i + 1], pixelData[i]);
-                var mappedColor = pixelClusterMapping[originalColor];
+                var (R, G, B) = pixelClusterMapping[originalColor];
 
-                pixelData[i] = mappedColor.B;
-                pixelData[i + 1] = mappedColor.G;
-                pixelData[i + 2] = mappedColor.R;
+                pixelData[i] = B;
+                pixelData[i + 1] = G;
+                pixelData[i + 2] = R;
             }
 
             WriteableBitmap quantizedBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
