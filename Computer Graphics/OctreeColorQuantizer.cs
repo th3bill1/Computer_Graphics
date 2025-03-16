@@ -61,7 +61,7 @@ internal class OctreeColorQuantizer
         foreach (var leaf in leaves)
         {
             if (!priorityQueue.ContainsKey(leaf.PixelCount))
-                priorityQueue[leaf.PixelCount] = new List<OctreeNode>();
+                priorityQueue[leaf.PixelCount] = [];
 
             priorityQueue[leaf.PixelCount].Add(leaf);
         }

@@ -333,7 +333,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            MedianCutQuantizationWindow settingsWindow = new MedianCutQuantizationWindow();
+            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Median Cut Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
@@ -349,7 +349,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            OctreeQuantizationWindow settingsWindow = new OctreeQuantizationWindow();
+            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Octree Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
