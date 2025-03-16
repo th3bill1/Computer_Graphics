@@ -296,4 +296,46 @@ public partial class MainWindow : Window
             }
         }
     }
+    private void ApplyPopularityQuantization_Click(object sender, EventArgs e)
+    {
+        if (displayedImage != null)
+        {
+            PopularityQuantizationWindow settingsWindow = new PopularityQuantizationWindow();
+            bool? result = settingsWindow.ShowDialog();
+
+            if (result == true)
+            {
+                int numColors = settingsWindow.NumColors;
+
+                displayedImage = ColorQuantization.ApplyPopularityQuantization(displayedImage, numColors);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+    }
+
+    private void ApplyKmeansQuantization_Click(object sender, EventArgs e)
+    {
+        if (displayedImage != null)
+        {
+            KMeansQuantizationWindow settingsWindow = new KMeansQuantizationWindow();
+            bool? result = settingsWindow.ShowDialog();
+
+            if (result == true)
+            {
+                int numClusters = settingsWindow.NumClusters;
+
+                displayedImage = ColorQuantization.ApplyKMeansQuantization(displayedImage, numClusters);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+    }
+    private void ApplyMediancutmQuantization_Click(object sender, EventArgs e)
+    {
+
+    }
+    private void ApplyOctreeQuantization_Click(object sender, EventArgs e)
+    {
+
+    }
+
 }

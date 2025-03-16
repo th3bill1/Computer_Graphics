@@ -33,10 +33,10 @@
                 </MenuItem>
                 <MenuItem Header="Color quantization" Margin="5">
                     <MenuItem Header="Uniform" Click="ApplyUniformQuantization_Click" Margin="5"/>
-                    <MenuItem Header="Popularity"  Margin="5"/>
-                    <MenuItem Header="K-Means" Margin="5"/>
-                    <MenuItem Header="Median cut"  Margin="5"/>
-                    <MenuItem Header="Octree" Margin="5"/>
+                    <MenuItem Header="Popularity" Click="ApplyPopularityQuantization_Click" Margin="5"/>
+                    <MenuItem Header="K-Means" Click="ApplyKmeansQuantization_Click" Margin="5"/>
+                    <MenuItem Header="Median cut" Click="ApplyMediancutmQuantization_Click" Margin="5"/>
+                    <MenuItem Header="Octree" Click="ApplyOctreeQuantization_Click" Margin="5"/>
                 </MenuItem>
             </Menu>
             <Grid>
