@@ -106,7 +106,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        Menu mainMenu = (Menu)this.FindName("MainMenu");
+        Menu mainMenu = (Menu)FindName("MainMenu");
         MenuItem functionFiltersMenu = mainMenu.Items
             .OfType<MenuItem>()
             .FirstOrDefault(item => item.Header.ToString() == "Function filters");
@@ -252,10 +252,6 @@ public partial class MainWindow : Window
             displayedImage = Dithering.ApplyOrderedDithering(displayedImage, numShades, matrixSize);
             ImageDisplay.Source = displayedImage;
         }
-        else
-        {
-            MessageBox.Show("No image loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
     }
     private void ApplyErrorDithering_Click(object sender, EventArgs e)
     {
@@ -272,10 +268,6 @@ public partial class MainWindow : Window
                 displayedImage = Dithering.ApplyErrorDiffusionDithering(displayedImage, numShades, selectedFilter);
                 ImageDisplay.Source = displayedImage;
             }
-        }
-        else
-        {
-            MessageBox.Show("No image loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
     private void ApplyUniformQuantization_Click(object sender, EventArgs e)
