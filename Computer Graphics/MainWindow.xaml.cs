@@ -331,11 +331,35 @@ public partial class MainWindow : Window
     }
     private void ApplyMediancutmQuantization_Click(object sender, EventArgs e)
     {
+        if (displayedImage != null)
+        {
+            MedianCutQuantizationWindow settingsWindow = new MedianCutQuantizationWindow();
+            bool? result = settingsWindow.ShowDialog();
 
+            if (result == true)
+            {
+                int numColors = settingsWindow.NumColors;
+
+                displayedImage = ColorQuantization.ApplyMedianCutQuantization(displayedImage, numColors);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
     }
     private void ApplyOctreeQuantization_Click(object sender, EventArgs e)
     {
+        if (displayedImage != null)
+        {
+            OctreeQuantizationWindow settingsWindow = new OctreeQuantizationWindow();
+            bool? result = settingsWindow.ShowDialog();
 
+            if (result == true)
+            {
+                int numColors = settingsWindow.NumColors;
+
+                displayedImage = ColorQuantization.ApplyOctreeQuantization(displayedImage, numColors);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
     }
 
 }
