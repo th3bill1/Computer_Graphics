@@ -32,11 +32,11 @@
                     <MenuItem Header="Error Dithering" Click="ApplyErrorDithering_Click"/>
                 </MenuItem>
                 <MenuItem Header="Color quantization" Margin="5">
-                    <MenuItem Header="Uniform" Click="ApplyUniformQuantization_Click" Margin="5"/>
-                    <MenuItem Header="Popularity" Click="ApplyPopularityQuantization_Click" Margin="5"/>
-                    <MenuItem Header="K-Means" Click="ApplyKmeansQuantization_Click" Margin="5"/>
-                    <MenuItem Header="Median cut" Click="ApplyMediancutmQuantization_Click" Margin="5"/>
-                    <MenuItem Header="Octree" Click="ApplyOctreeQuantization_Click" Margin="5"/>
+                    <MenuItem Header="Uniform" Click="ApplyUniformQuantization_Click"/>
+                    <MenuItem Header="Popularity" Click="ApplyPopularityQuantization_Click"/>
+                    <MenuItem Header="K-Means" Click="ApplyKmeansQuantization_Click"/>
+                    <MenuItem Header="Median cut" Click="ApplyMediancutmQuantization_Click"/>
+                    <MenuItem Header="Octree" Click="ApplyOctreeQuantization_Click"/>
                 </MenuItem>
             </Menu>
             <Grid>
