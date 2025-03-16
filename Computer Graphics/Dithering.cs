@@ -167,6 +167,79 @@ namespace Computer_Graphics
                 _ => throw new ArgumentException("Invalid Bayer matrix size. Choose 2, 3, 4, or 6."),
             };
         }
+        public static WriteableBitmap ApplyErrorDiffusionDithering(WriteableBitmap source, int numShades, string filterType)
+        {
+            (int dx, int dy, double weight)[] filter = GetErrorDiffusionFilter(filterType);
+
+            int width = source.PixelWidth;
+            int height = source.PixelHeight;
+            int stride = width * 4;
+            byte[] pixelData = new byte[height * stride];
+
+            source.CopyPixels(pixelData, stride, 0);
+
+            int colorStep = 255 / (numShades - 1);
+            double[,] errorBuffer = new double[width, height];
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int index = (y * stride) + (x * 4);
+
+                    byte b = pixelData[index];
+                    byte g = pixelData[index + 1];
+                    byte r = pixelData[index + 2];
+
+                    double oldGray = 0.299 * r + 0.587 * g + 0.114 * b + errorBuffer[x, y];
+                    byte newGray = QuantizeColor((int)oldGray, colorStep);
+                    double error = oldGray - newGray;
+
+                    pixelData[index] = newGray;
+                    pixelData[index + 1] = newGray;
+                    pixelData[index + 2] = newGray;
+
+                    foreach (var (dx, dy, weight) in filter)
+                    {
+                        int nx = x + dx;
+                        int ny = y + dy;
+                        if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                        {
+                            errorBuffer[nx, ny] += error * weight;
+                        }
+                    }
+                }
+            }
+
+            WriteableBitmap ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
+            ditheredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
+
+            return ditheredBitmap;
+        }
+        private static (int dx, int dy, double weight)[] GetErrorDiffusionFilter(string filterType)
+        {
+            return filterType switch
+            {
+                "Floyd-Steinberg" => new (int, int, double)[] {
+                    (1, 0, 7.0 / 16), ( -1, 1, 3.0 / 16), (0, 1, 5.0 / 16), (1, 1, 1.0 / 16)
+                },
+                "Burkes" => new (int, int, double)[] {
+                    (1, 0, 8.0 / 32), (2, 0, 4.0 / 32), (-2, 1, 2.0 / 32), (-1, 1, 4.0 / 32), (0, 1, 8.0 / 32), (1, 1, 4.0 / 32), (2, 1, 2.0 / 32)
+                },
+                "Stucki" => new (int, int, double)[] {
+                    (1, 0, 8.0 / 42), (2, 0, 4.0 / 42), (-2, 1, 2.0 / 42), (-1, 1, 4.0 / 42), (0, 1, 8.0 / 42), (1, 1, 4.0 / 42), (2, 1, 2.0 / 42),
+                    (-2, 2, 1.0 / 42), (-1, 2, 2.0 / 42), (0, 2, 4.0 / 42), (1, 2, 2.0 / 42), (2, 2, 1.0 / 42)
+                },
+                "Sierra" => new (int, int, double)[] {
+                    (1, 0, 5.0 / 32), (2, 0, 3.0 / 32), (-2, 1, 2.0 / 32), (-1, 1, 4.0 / 32), (0, 1, 5.0 / 32), (1, 1, 4.0 / 32), (2, 1, 2.0 / 32),
+                    (-1, 2, 2.0 / 32), (0, 2, 3.0 / 32), (1, 2, 2.0 / 32)
+                },
+                "Atkinson" => new (int, int, double)[] {
+                    (1, 0, 1.0 / 8), (2, 0, 1.0 / 8), (-1, 1, 1.0 / 8), (0, 1, 1.0 / 8), (1, 1, 1.0 / 8), (0, 2, 1.0 / 8)
+                },
+                _ => throw new ArgumentException("Invalid filter type.")
+            };
+        }
     }
 }
 

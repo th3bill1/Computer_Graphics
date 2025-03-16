@@ -1,0 +1,27 @@
+﻿<Window x:Class="Computer_Graphics.ErrorDitheringSelection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Error Dithering Settings" Height="200" Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Number of Shades:" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="ShadesBox" Grid.Row="0" Width="100" HorizontalAlignment="Right" Margin="5"/>
+
+        <TextBlock Text="Select Dithering Filter:" Grid.Row="1" VerticalAlignment="Center" Margin="5"/>
+        <ComboBox Name="FilterDropdown" Grid.Row="1" Width="150" HorizontalAlignment="Right" Margin="5">
+            <ComboBoxItem Content="Floyd-Steinberg"/>
+            <ComboBoxItem Content="Burkes"/>
+            <ComboBoxItem Content="Stucki"/>
+            <ComboBoxItem Content="Sierra"/>
+            <ComboBoxItem Content="Atkinson"/>
+        </ComboBox>
+
+        <Button Content="Apply" Grid.Row="3" Click="ApplyButton_Click" Width="80" HorizontalAlignment="Center" Margin="30"/>
+    </Grid>
+</Window>

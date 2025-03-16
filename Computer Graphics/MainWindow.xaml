@@ -29,6 +29,14 @@
                     <MenuItem Header="Random" Click="ApplyRandomDithering_Click"/>
                     <MenuItem Header="Avarage" Click="ApplyAvarageDithering_Click"/>
                     <MenuItem Header="Ordered" Click="ApplyOrderedDithering_Click"/>
+                    <MenuItem Header="Error Dithering" Click="ApplyErrorDithering_Click"/>
+                </MenuItem>
+                <MenuItem Header="Color quantization" Margin="5">
+                    <MenuItem Header="Uniform" Click="ApplyUniformQuantization_Click" Margin="5"/>
+                    <MenuItem Header="Popularity"  Margin="5"/>
+                    <MenuItem Header="K-Means" Margin="5"/>
+                    <MenuItem Header="Median cut"  Margin="5"/>
+                    <MenuItem Header="Octree" Margin="5"/>
                 </MenuItem>
             </Menu>
             <Grid>

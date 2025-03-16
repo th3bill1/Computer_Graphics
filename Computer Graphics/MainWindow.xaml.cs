@@ -257,5 +257,43 @@ public partial class MainWindow : Window
             MessageBox.Show("No image loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+    private void ApplyErrorDithering_Click(object sender, EventArgs e)
+    {
+        if (displayedImage != null)
+        {
+            ErrorDitheringSelection settingsWindow = new ErrorDitheringSelection();
+            bool? result = settingsWindow.ShowDialog(); 
 
+            if (result == true)
+            {
+                int numShades = settingsWindow.NumShades;
+                string selectedFilter = settingsWindow.SelectedFilter;
+
+                displayedImage = Dithering.ApplyErrorDiffusionDithering(displayedImage, numShades, selectedFilter);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+        else
+        {
+            MessageBox.Show("No image loaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    private void ApplyUniformQuantization_Click(object sender, EventArgs e)
+    {
+        if (displayedImage != null)
+        {
+            UniformQuantizationWindow settingsWindow = new UniformQuantizationWindow();
+            bool? result = settingsWindow.ShowDialog();
+
+            if (result == true)
+            {
+                int rDivisions = settingsWindow.RDivisions;
+                int gDivisions = settingsWindow.GDivisions;
+                int bDivisions = settingsWindow.BDivisions;
+
+                displayedImage = ColorQuantization.ApplyUniformQuantization(displayedImage, rDivisions, gDivisions, bDivisions);
+                ImageDisplay.Source = displayedImage;
+            }
+        }
+    }
 }
