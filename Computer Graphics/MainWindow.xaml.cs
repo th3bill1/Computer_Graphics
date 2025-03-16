@@ -318,12 +318,12 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            KMeansQuantizationWindow settingsWindow = new KMeansQuantizationWindow();
+            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("K-Means Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
             {
-                int numClusters = settingsWindow.NumClusters;
+                int numClusters = settingsWindow.NumColors;
 
                 displayedImage = ColorQuantization.ApplyKMeansQuantization(displayedImage, numClusters);
                 ImageDisplay.Source = displayedImage;
