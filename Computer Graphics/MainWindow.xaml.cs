@@ -282,14 +282,15 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            UniformQuantizationWindow settingsWindow = new UniformQuantizationWindow();
+            QuantizationSettingsWindow settingsWindow = 
+                new QuantizationSettingsWindow("Uniform Quantization", ["RDivisions", "GDivisions", "BDivisions"]);
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
             {
-                int rDivisions = settingsWindow.RDivisions;
-                int gDivisions = settingsWindow.GDivisions;
-                int bDivisions = settingsWindow.BDivisions;
+                int rDivisions = settingsWindow.Values[0];
+                int gDivisions = settingsWindow.Values[1];
+                int bDivisions = settingsWindow.Values[2];
 
                 displayedImage = ColorQuantization.ApplyUniformQuantization(displayedImage, rDivisions, gDivisions, bDivisions);
                 ImageDisplay.Source = displayedImage;
@@ -300,7 +301,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            PopularityQuantizationWindow settingsWindow = new PopularityQuantizationWindow();
+            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Popularity Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
