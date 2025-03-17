@@ -257,13 +257,13 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            ErrorDitheringSelection settingsWindow = new ErrorDitheringSelection();
+            SettingsWindow settingsWindow = new SettingsWindow("Error Dithering", ["Number of shades"] ,typeof(Dithering.FilterType));
             bool? result = settingsWindow.ShowDialog(); 
 
             if (result == true)
             {
-                int numShades = settingsWindow.NumShades;
-                string selectedFilter = settingsWindow.SelectedFilter;
+                int numShades = settingsWindow.Values[0];
+                Dithering.FilterType selectedFilter = (Dithering.FilterType)settingsWindow.SelectedEnumValue;
 
                 displayedImage = Dithering.ApplyErrorDiffusionDithering(displayedImage, numShades, selectedFilter);
                 ImageDisplay.Source = displayedImage;
@@ -274,8 +274,8 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            QuantizationSettingsWindow settingsWindow = 
-                new QuantizationSettingsWindow("Uniform Quantization", ["RDivisions", "GDivisions", "BDivisions"]);
+            SettingsWindow settingsWindow = 
+                new SettingsWindow("Uniform Quantization", ["Red divisions", "Green dvisions", "BDivisions"]);
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
@@ -293,7 +293,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Popularity Quantization");
+            SettingsWindow settingsWindow = new SettingsWindow("Popularity Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
@@ -310,7 +310,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("K-Means Quantization");
+            SettingsWindow settingsWindow = new SettingsWindow("K-Means Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
@@ -326,7 +326,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Median Cut Quantization");
+            SettingsWindow settingsWindow = new SettingsWindow("Median Cut Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
@@ -342,7 +342,7 @@ public partial class MainWindow : Window
     {
         if (displayedImage != null)
         {
-            QuantizationSettingsWindow settingsWindow = new QuantizationSettingsWindow("Octree Quantization");
+            SettingsWindow settingsWindow = new SettingsWindow("Octree Quantization");
             bool? result = settingsWindow.ShowDialog();
 
             if (result == true)
