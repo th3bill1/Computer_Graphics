@@ -1,0 +1,54 @@
+﻿<Window x:Class="Computer_Graphics.Tasks1and2Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Computer_Graphics"
+        mc:Ignorable="d"
+        Title="Tasks1and2Window" Height="450" Width="800">
+    <Grid>
+        <DockPanel>
+            <Menu x:Name="MainMenu" DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" Click="LoadImage_Click"/>
+                    <MenuItem Header="_Reset" Click="ResetImage_Click"/>
+                    <MenuItem Header="_Save" Click="SaveImage_Click"/>
+                </MenuItem>
+                <MenuItem Header="Function filters" x:Name="FunctionFiltersMenu">
+                    <MenuItem Header="Open Filter Editor" Click="OpenFunctionFilterEditor_Click" Margin="5"/>
+                    <MenuItem Header="Greyscale">
+                        <MenuItem Header="Apply" Click="ConvertToGreyscale_Click" Margin="5"/>
+                        <MenuItem Header="Edit Parameters" Click="OpenGreyscaleEditor_Click" Margin="5"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Convolution filters">
+                    <MenuItem Header="Open Filter Editor" Click="OpenConvolutionFilterEditor_Click" Margin="5"/>
+                </MenuItem>
+                <MenuItem Header="Median filter" Click="ApplyMedianFilter_Click" Margin="5"/>
+                <MenuItem Header="Dithering" Margin="5">
+                    <MenuItem Header="Random" Click="ApplyRandomDithering_Click"/>
+                    <MenuItem Header="Avarage" Click="ApplyAvarageDithering_Click"/>
+                    <MenuItem Header="Ordered" Click="ApplyOrderedDithering_Click"/>
+                    <MenuItem Header="Error Dithering" Click="ApplyErrorDithering_Click"/>
+                </MenuItem>
+                <MenuItem Header="Color quantization" Margin="5">
+                    <MenuItem Header="Uniform" Click="ApplyUniformQuantization_Click"/>
+                    <MenuItem Header="Popularity" Click="ApplyPopularityQuantization_Click"/>
+                    <MenuItem Header="K-Means" Click="ApplyKmeansQuantization_Click"/>
+                    <MenuItem Header="Median cut" Click="ApplyMediancutmQuantization_Click"/>
+                    <MenuItem Header="Octree" Click="ApplyOctreeQuantization_Click"/>
+                </MenuItem>
+                <MenuItem Header="HSV Conversion" Click="HSVConversion_Click"/>
+            </Menu>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Name="ImageOriginal" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" Margin="15"/>
+                <Image Grid.Column="1" Name="ImageDisplay" Stretch= "Uniform" HorizontalAlignment= "Center" VerticalAlignment= "Center" Margin="15"/>
+            </Grid>
+
+        </DockPanel>
+    </Grid>
+</Window>

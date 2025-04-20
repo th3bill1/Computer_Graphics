@@ -169,7 +169,7 @@ namespace Computer_Graphics
                 for (int j = 0; j < cols; j++)
                     kernelArray[i, j] = kernel[i][j];
 
-            MainWindow.Instance?.ApplyConvolutionFilter(kernelArray, rows, cols);
+            Tasks1and2Window.Instance?.ApplyConvolutionFilter(kernelArray, rows, cols);
         }
     }
 }

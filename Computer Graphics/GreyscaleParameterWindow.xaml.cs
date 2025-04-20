@@ -80,11 +80,11 @@ namespace Computer_Graphics
                 G_Weight = g;
                 B_Weight = b;
 
-                if (MainWindow.Instance != null && MainWindow.Instance.DisplayedImage != null)
+                if (Tasks1and2Window.Instance != null && Tasks1and2Window.Instance.DisplayedImage != null)
                 {
-                    MainWindow.Instance.DisplayedImage = GreyscaleConversion.ConvertToGrayscale(
-                        MainWindow.Instance.DisplayedImage, R_Weight, G_Weight, B_Weight);
-                    MainWindow.Instance.ImageDisplay.Source = MainWindow.Instance.DisplayedImage;
+                    Tasks1and2Window.Instance.DisplayedImage = GreyscaleConversion.ConvertToGrayscale(
+                        Tasks1and2Window.Instance.DisplayedImage, R_Weight, G_Weight, B_Weight);
+                    Tasks1and2Window.Instance.ImageDisplay.Source = Tasks1and2Window.Instance.DisplayedImage;
                 }
             }
             else

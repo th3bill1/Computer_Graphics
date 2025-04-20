@@ -130,24 +130,38 @@ internal class Dithering
                 byte g = pixelData[index + 1];
                 byte r = pixelData[index + 2];
 
-                byte gray = (byte)(0.299 * r + 0.587 * g + 0.114 * b);
-
                 int threshold = thresholdMap[y % matrixSize, x % matrixSize];
 
                 int thresholdValue = (threshold * 255) / (matrixSize * matrixSize);
 
-                if (gray > thresholdValue)
+                if (b > thresholdValue)
                 {
-                    gray = QuantizeColor(gray + colorStep / 2, colorStep);
+                    b = QuantizeColor(b + colorStep / 2, colorStep);
                 }
                 else
                 {
-                    gray = QuantizeColor(gray - colorStep / 2, colorStep);
+                    b = QuantizeColor(b - colorStep / 2, colorStep);
+                }
+                if (g > thresholdValue)
+                {
+                    g = QuantizeColor(g + colorStep / 2, colorStep);
+                }
+                else
+                {
+                    g = QuantizeColor(g - colorStep / 2, colorStep);
+                }
+                if (r > thresholdValue)
+                {
+                    r = QuantizeColor(r + colorStep / 2, colorStep);
+                }
+                else
+                {
+                    r = QuantizeColor(r - colorStep / 2, colorStep);
                 }
 
-                pixelData[index] = gray;
-                pixelData[index + 1] = gray;
-                pixelData[index + 2] = gray;
+                pixelData[index] = b;
+                pixelData[index + 1] = g;
+                pixelData[index + 2] = r;
             }
         }
 

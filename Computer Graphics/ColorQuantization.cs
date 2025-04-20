@@ -55,7 +55,6 @@ internal class ColorQuantization
     {
         byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
         OctreeColorQuantizer octree = new();
-        Dictionary<(byte, byte, byte), (byte, byte, byte)> colorMap = [];
 
         for (int i = 0; i < pixelData.Length; i += 4)
         {
@@ -64,7 +63,16 @@ internal class ColorQuantization
         }
 
         var palette = octree.GeneratePalette(numColors);
-        MapPixelsToNearestColor(pixelData, palette);
+
+        for (int i = 0; i < pixelData.Length; i += 4)
+        {
+            var originalColor = (pixelData[i + 2], pixelData[i + 1], pixelData[i]);
+            var closestColor = octree.FindNearestColor(originalColor);
+
+            pixelData[i] = closestColor.B;
+            pixelData[i + 1] = closestColor.G;
+            pixelData[i + 2] = closestColor.R;
+        }
 
         return CreateBitmapFromPixelData(pixelData, width, height, stride, source);
     }
