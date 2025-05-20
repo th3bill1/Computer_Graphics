@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Computer_Graphics.Task1and2;
+using System.IO;
 using System.Windows;
 
 namespace Computer_Graphics

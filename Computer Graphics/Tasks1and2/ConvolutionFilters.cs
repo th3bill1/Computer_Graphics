@@ -4,35 +4,35 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Globalization;
 
-namespace Computer_Graphics;
+namespace Computer_Graphics.Task1and2;
 internal class ConvolutionFilters
 {
     public static WriteableBitmap ApplyConvolutionFilter(WriteableBitmap bitmap, double[,] kernel, int rows, int cols)
     {
-        int width = bitmap.PixelWidth;
-        int height = bitmap.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
-        byte[] resultData = new byte[height * stride];
+        var width = bitmap.PixelWidth;
+        var height = bitmap.PixelHeight;
+        var stride = width * 4;
+        var pixelData = new byte[height * stride];
+        var resultData = new byte[height * stride];
         bitmap.CopyPixels(pixelData, stride, 0);
 
-        int rowOffset = rows / 2;
-        int colOffset = cols / 2;
+        var rowOffset = rows / 2;
+        var colOffset = cols / 2;
 
-        for (int y = rowOffset; y < height - rowOffset; y++)
+        for (var y = rowOffset; y < height - rowOffset; y++)
         {
-            for (int x = colOffset; x < width - colOffset; x++)
+            for (var x = colOffset; x < width - colOffset; x++)
             {
                 double blue = 0, green = 0, red = 0;
 
-                for (int ky = -rowOffset; ky <= rowOffset; ky++)
+                for (var ky = -rowOffset; ky <= rowOffset; ky++)
                 {
-                    for (int kx = -colOffset; kx <= colOffset; kx++)
+                    for (var kx = -colOffset; kx <= colOffset; kx++)
                     {
-                        int pixelX = x + kx;
-                        int pixelY = y + ky;
-                        int pixelIndex = (pixelY * stride) + (pixelX * 4);
-                        double kernelValue = kernel[ky + rowOffset, kx + colOffset];
+                        var pixelX = x + kx;
+                        var pixelY = y + ky;
+                        var pixelIndex = pixelY * stride + pixelX * 4;
+                        var kernelValue = kernel[ky + rowOffset, kx + colOffset];
 
                         blue += pixelData[pixelIndex] * kernelValue;
                         green += pixelData[pixelIndex + 1] * kernelValue;
@@ -40,7 +40,7 @@ internal class ConvolutionFilters
                     }
                 }
 
-                int resultIndex = (y * stride) + (x * 4);
+                var resultIndex = y * stride + x * 4;
                 resultData[resultIndex] = Clamp(blue);
                 resultData[resultIndex + 1] = Clamp(green);
                 resultData[resultIndex + 2] = Clamp(red);
@@ -60,17 +60,17 @@ internal class ConvolutionFilters
         if (!File.Exists(filePath))
             throw new FileNotFoundException("Convolution filter file not found!");
 
-        string[] lines = File.ReadAllLines(filePath);
-        string[] sizeParts = lines[0].Split(',');
-        int rows = int.Parse(sizeParts[0]);
-        int cols = int.Parse(sizeParts[1]);
+        var lines = File.ReadAllLines(filePath);
+        var sizeParts = lines[0].Split(',');
+        var rows = int.Parse(sizeParts[0]);
+        var cols = int.Parse(sizeParts[1]);
 
 
-        double[,] kernel = new double[rows, cols];
-        for (int i = 0; i < rows; i++)
+        var kernel = new double[rows, cols];
+        for (var i = 0; i < rows; i++)
         {
-            double[] rowValues = lines[i + 1].Split(',').Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
-            for (int j = 0; j < cols; j++)
+            var rowValues = lines[i + 1].Split(',').Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
+            for (var j = 0; j < cols; j++)
             {
                 kernel[i, j] = rowValues[j];
             }
@@ -80,5 +80,5 @@ internal class ConvolutionFilters
         return (kernel, rows, cols);
     }
 
-    private static byte Clamp(double value) => (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));
+    private static byte Clamp(double value) => (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Computer_Graphics.Task1and2;
+using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;

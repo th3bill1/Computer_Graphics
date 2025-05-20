@@ -1,4 +1,4 @@
-﻿namespace Computer_Graphics;
+﻿namespace Computer_Graphics.Task1and2;
 
 internal class OctreeColorQuantizer
 {
@@ -30,9 +30,9 @@ internal class OctreeColorQuantizer
                 return;
             }
 
-            int index = ((color.R >> (7 - level)) & 1) << 2 |
-                        ((color.G >> (7 - level)) & 1) << 1 |
-                        ((color.B >> (7 - level)) & 1);
+            var index = (color.R >> 7 - level & 1) << 2 |
+                        (color.G >> 7 - level & 1) << 1 |
+                        color.B >> 7 - level & 1;
 
             if (Children[index] == null)
                 Children[index] = new OctreeNode(level + 1, this);
@@ -111,7 +111,7 @@ internal class OctreeColorQuantizer
     {
         if (node == null) return;
 
-        int totalPixels = 0;
+        var totalPixels = 0;
         int redSum = 0, greenSum = 0, blueSum = 0;
 
         foreach (var child in node.Children)
@@ -146,7 +146,7 @@ internal class OctreeColorQuantizer
         clone.GreenSum = original.GreenSum;
         clone.BlueSum = original.BlueSum;
 
-        for (int i = 0; i < 8; i++)
+        for (var i = 0; i < 8; i++)
         {
             if (original.Children[i] != null)
                 clone.Children[i] = CloneTree(original.Children[i]);
@@ -165,9 +165,9 @@ internal class OctreeColorQuantizer
         if (node.IsLeaf)
             return node.GetAverageColor();
 
-        int index = ((color.R >> (7 - node.Depth)) & 1) << 2 |
-                    ((color.G >> (7 - node.Depth)) & 1) << 1 |
-                    ((color.B >> (7 - node.Depth)) & 1);
+        var index = (color.R >> 7 - node.Depth & 1) << 2 |
+                    (color.G >> 7 - node.Depth & 1) << 1 |
+                    color.B >> 7 - node.Depth & 1;
 
         if (node.Children[index] != null)
             return FindNearestColorInTree(node.Children[index], color);

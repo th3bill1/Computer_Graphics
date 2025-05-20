@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Computer_Graphics.Task1and2;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;

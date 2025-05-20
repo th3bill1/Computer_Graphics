@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Computer_Graphics;
+namespace Computer_Graphics.Task1and2;
 
 public class SettingsWindow : Window
 {
@@ -20,9 +20,9 @@ public class SettingsWindow : Window
         SizeToContent = SizeToContent.Height;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        Grid grid = new Grid { Margin = new Thickness(10) };
+        var grid = new Grid { Margin = new Thickness(10) };
 
-        int rowIndex = 0;
+        var rowIndex = 0;
 
         if (altFields != null && altFields.Count > 0)
         {
@@ -30,12 +30,12 @@ public class SettingsWindow : Window
             {
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                Border rowBorder = new Border
+                var rowBorder = new Border
                 {
                     BorderThickness = new Thickness(0, 0, 0, 5),
                     Padding = new Thickness(5),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Child = CreateRow(field, out TextBox valueBox)
+                    Child = CreateRow(field, out var valueBox)
                 };
 
                 ValueBoxes.Add(valueBox);
@@ -47,7 +47,7 @@ public class SettingsWindow : Window
         {
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            Border rowBorder = new Border
+            var rowBorder = new Border
             {
                 BorderThickness = new Thickness(0, 0, 0, 5),
                 Padding = new Thickness(5),
@@ -62,7 +62,7 @@ public class SettingsWindow : Window
         {
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            Border enumRowBorder = new Border
+            var enumRowBorder = new Border
             {
                 BorderThickness = new Thickness(0, 0, 0, 5),
                 Padding = new Thickness(5),
@@ -74,7 +74,7 @@ public class SettingsWindow : Window
             grid.Children.Add(enumRowBorder);
         }
 
-        Button applyButton = new Button
+        var applyButton = new Button
         {
             Content = "Apply",
             Width = 80,
@@ -92,9 +92,9 @@ public class SettingsWindow : Window
 
     private static StackPanel CreateRow(string labelText, out TextBox textBox)
     {
-        StackPanel row = new StackPanel { Orientation = Orientation.Horizontal };
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
 
-        TextBlock label = new TextBlock
+        var label = new TextBlock
         {
             Text = labelText,
             VerticalAlignment = VerticalAlignment.Center,
@@ -115,9 +115,9 @@ public class SettingsWindow : Window
 
     private static StackPanel CreateEnumRow(Type enumType, out ComboBox comboBox)
     {
-        StackPanel row = new StackPanel { Orientation = Orientation.Horizontal };
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
 
-        TextBlock label = new TextBlock
+        var label = new TextBlock
         {
             Text = "Select Value:",
             VerticalAlignment = VerticalAlignment.Center,
@@ -141,18 +141,14 @@ public class SettingsWindow : Window
         Values.Clear();
 
         if (EnumComboBox != null)
-        {
             SelectedEnumValue = EnumComboBox.SelectedItem;
-        }
 
         if (ValueBoxes.Count > 0)
         {
             foreach (var box in ValueBoxes)
             {
-                if (int.TryParse(box.Text, out int value) && value >= 2 && value <= 256)
-                {
+                if (int.TryParse(box.Text, out var value) && value >= 2 && value <= 256)
                     Values.Add(value);
-                }
                 else
                 {
                     MessageBox.Show("Invalid input. Enter a number between 2 and 256.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -163,7 +159,7 @@ public class SettingsWindow : Window
         }
         else if (NumColorsBox != null)
         {
-            if (int.TryParse(NumColorsBox.Text, out int colors) && colors >= 2 && colors <= 256)
+            if (int.TryParse(NumColorsBox.Text, out var colors) && colors >= 2 && colors <= 256)
             {
                 NumColors = colors;
                 DialogResult = true;

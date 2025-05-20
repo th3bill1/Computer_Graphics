@@ -2,17 +2,17 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Computer_Graphics;
+namespace Computer_Graphics.Task1and2;
 internal class ColorQuantization
 {
     private static readonly Random random = new();
     public static WriteableBitmap ApplyUniformQuantization(WriteableBitmap source, int rDivisions, int gDivisions, int bDivisions)
     {
-        byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
+        var pixelData = GetPixelData(source, out var width, out var height, out var stride);
 
         int rStep = 256 / rDivisions, gStep = 256 / gDivisions, bStep = 256 / bDivisions;
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
             pixelData[i + 2] = QuantizeColor(pixelData[i + 2], rStep);
             pixelData[i + 1] = QuantizeColor(pixelData[i + 1], gStep);
@@ -23,7 +23,7 @@ internal class ColorQuantization
     }
     public static WriteableBitmap ApplyPopularityQuantization(WriteableBitmap source, int numColors, int subdivisions = 4)
     {
-        byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
+        var pixelData = GetPixelData(source, out var width, out var height, out var stride);
         var colorBins = GetColorBins(pixelData, subdivisions);
 
         var mostFrequentColors = GetTopColorsFromBins(colorBins, numColors);
@@ -33,7 +33,7 @@ internal class ColorQuantization
     }
     public static WriteableBitmap ApplyKMeansQuantization(WriteableBitmap source, int numClusters)
     {
-        byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
+        var pixelData = GetPixelData(source, out var width, out var height, out var stride);
         var pixels = ExtractPixels(pixelData);
 
         var clusters = RunKMeansClustering(pixels, numClusters);
@@ -43,7 +43,7 @@ internal class ColorQuantization
     }
     public static WriteableBitmap ApplyMedianCutQuantization(WriteableBitmap source, int numColors)
     {
-        byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
+        var pixelData = GetPixelData(source, out var width, out var height, out var stride);
         var pixels = ExtractPixels(pixelData);
 
         var colorPalette = MedianCut(pixels, numColors);
@@ -53,10 +53,10 @@ internal class ColorQuantization
     }
     public static WriteableBitmap ApplyOctreeQuantization(WriteableBitmap source, int numColors)
     {
-        byte[] pixelData = GetPixelData(source, out int width, out int height, out int stride);
+        var pixelData = GetPixelData(source, out var width, out var height, out var stride);
         OctreeColorQuantizer octree = new();
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
             var color = (pixelData[i + 2], pixelData[i + 1], pixelData[i]);
             octree.AddColor(color);
@@ -64,7 +64,7 @@ internal class ColorQuantization
 
         var palette = octree.GeneratePalette(numColors);
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
             var originalColor = (pixelData[i + 2], pixelData[i + 1], pixelData[i]);
             var closestColor = octree.FindNearestColor(originalColor);
@@ -82,7 +82,7 @@ internal class ColorQuantization
         width = source.PixelWidth;
         height = source.PixelHeight;
         stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
+        var pixelData = new byte[height * stride];
 
         source.CopyPixels(pixelData, stride, 0);
         return pixelData;
@@ -99,10 +99,10 @@ internal class ColorQuantization
     }
     private static Dictionary<(int, int, int), List<int>> GetColorBins(byte[] pixelData, int subdivisions)
     {
-        int binSize = 256 / subdivisions;
+        var binSize = 256 / subdivisions;
         Dictionary<(int, int, int), List<int>> colorBins = [];
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
             int r = pixelData[i + 2];
             int g = pixelData[i + 1];
@@ -110,7 +110,7 @@ internal class ColorQuantization
 
             var binKey = (r / binSize, g / binSize, b / binSize);
             colorBins.TryAdd(binKey, []);
-            colorBins[binKey].Add((r << 16) | (g << 8) | b);
+            colorBins[binKey].Add(r << 16 | g << 8 | b);
         }
 
         return colorBins;
@@ -126,8 +126,8 @@ internal class ColorQuantization
                                              .First().Key;
                        return (
                            (byte)(colors & 0xFF),
-                           (byte)((colors >> 8) & 0xFF),
-                           (byte)((colors >> 16) & 0xFF)
+                           (byte)(colors >> 8 & 0xFF),
+                           (byte)(colors >> 16 & 0xFF)
                        );
                    }).ToList();
     }
@@ -135,14 +135,14 @@ internal class ColorQuantization
     private static List<(byte, byte, byte)> ExtractPixels(byte[] pixelData)
     {
         List<(byte, byte, byte)> pixels = [];
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
             pixels.Add((pixelData[i + 2], pixelData[i + 1], pixelData[i]));
 
         return pixels;
     }
     private static void MapPixelsToNearestColor(byte[] pixelData, List<(byte, byte, byte)> palette)
     {
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
             var originalColor = (pixelData[i + 2], pixelData[i + 1], pixelData[i]);
             var closestColor = palette.OrderBy(c => ColorDistance(originalColor, c)).First();
@@ -161,7 +161,7 @@ internal class ColorQuantization
         do
         {
             changed = false;
-            Dictionary<(byte, byte, byte), List<(byte, byte, byte)>> clusterGroups = clusters.ToDictionary(c => c, _ => new List<(byte, byte, byte)>());
+            var clusterGroups = clusters.ToDictionary(c => c, _ => new List<(byte, byte, byte)>());
 
             foreach (var pixel in pixels)
             {
@@ -195,14 +195,14 @@ internal class ColorQuantization
 
             if (largestGroup.Count < 2) break;
 
-            int rangeR = largestGroup.Max(c => c.Item1) - largestGroup.Min(c => c.Item1);
-            int rangeG = largestGroup.Max(c => c.Item2) - largestGroup.Min(c => c.Item2);
-            int rangeB = largestGroup.Max(c => c.Item3) - largestGroup.Min(c => c.Item3);
+            var rangeR = largestGroup.Max(c => c.Item1) - largestGroup.Min(c => c.Item1);
+            var rangeG = largestGroup.Max(c => c.Item2) - largestGroup.Min(c => c.Item2);
+            var rangeB = largestGroup.Max(c => c.Item3) - largestGroup.Min(c => c.Item3);
 
-            int splitChannel = (rangeR >= rangeG && rangeR >= rangeB) ? 0 : (rangeG >= rangeB) ? 1 : 2;
+            var splitChannel = rangeR >= rangeG && rangeR >= rangeB ? 0 : rangeG >= rangeB ? 1 : 2;
 
             largestGroup = largestGroup.OrderBy(c => splitChannel == 0 ? c.Item1 : splitChannel == 1 ? c.Item2 : c.Item3).ToList();
-            int medianIndex = largestGroup.Count / 2;
+            var medianIndex = largestGroup.Count / 2;
 
             colorGroups.Enqueue(largestGroup.Take(medianIndex).ToList());
             colorGroups.Enqueue(largestGroup.Skip(medianIndex).ToList());

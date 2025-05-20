@@ -18,7 +18,7 @@ public partial class MainWindow : Window
 
     private void Button_Task3_Click(object sender, RoutedEventArgs e)
     {
-        var window = new Task3Window();
+        var window = new Tasks3and4Window();
         window.Show();
     }
 }

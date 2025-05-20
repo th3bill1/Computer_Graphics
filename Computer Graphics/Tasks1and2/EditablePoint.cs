@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Computer_Graphics;
+namespace Computer_Graphics.Task1and2;
 public class EditablePoint : INotifyPropertyChanged
 {
     private byte x;

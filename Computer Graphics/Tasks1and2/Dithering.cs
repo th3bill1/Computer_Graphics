@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Computer_Graphics;
+namespace Computer_Graphics.Task1and2;
 internal class Dithering
 {
     public enum FilterType
@@ -16,22 +16,22 @@ internal class Dithering
     private static readonly Random random = new();
     public static WriteableBitmap ApplyRandomDithering(WriteableBitmap source, int numShades)
     {
-        int width = source.PixelWidth;
-        int height = source.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
+        var width = source.PixelWidth;
+        var height = source.PixelHeight;
+        var stride = width * 4;
+        var pixelData = new byte[height * stride];
 
         source.CopyPixels(pixelData, stride, 0);
 
-        int colorStep = 255 / (numShades - 1);
+        var colorStep = 255 / (numShades - 1);
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
-            byte b = pixelData[i];
-            byte g = pixelData[i + 1];
-            byte r = pixelData[i + 2];
+            var b = pixelData[i];
+            var g = pixelData[i + 1];
+            var r = pixelData[i + 2];
 
-            int noise = random.Next(-colorStep / 2, colorStep / 2);
+            var noise = random.Next(-colorStep / 2, colorStep / 2);
             r = QuantizeColor(r + noise, colorStep);
             g = QuantizeColor(g + noise, colorStep);
             b = QuantizeColor(b + noise, colorStep);
@@ -41,44 +41,44 @@ internal class Dithering
             pixelData[i + 2] = r;
         }
 
-        WriteableBitmap ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
+        var ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
         ditheredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
 
         return ditheredBitmap;
     }
     public static WriteableBitmap ApplyAverageDithering(WriteableBitmap source, int numShades)
     {
-        int width = source.PixelWidth;
-        int height = source.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
+        var width = source.PixelWidth;
+        var height = source.PixelHeight;
+        var stride = width * 4;
+        var pixelData = new byte[height * stride];
 
         source.CopyPixels(pixelData, stride, 0);
 
-        int totalPixels = width * height;
+        var totalPixels = width * height;
         long totalBrightness = 0;
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
-            byte b = pixelData[i];
-            byte g = pixelData[i + 1];
-            byte r = pixelData[i + 2];
+            var b = pixelData[i];
+            var g = pixelData[i + 1];
+            var r = pixelData[i + 2];
 
             totalBrightness += (r + g + b) / 3;
         }
 
-        int averageBrightness = (int)(totalBrightness / totalPixels);
-        int colorStep = 255 / (numShades - 1);
+        var averageBrightness = (int)(totalBrightness / totalPixels);
+        var colorStep = 255 / (numShades - 1);
 
-        for (int i = 0; i < pixelData.Length; i += 4)
+        for (var i = 0; i < pixelData.Length; i += 4)
         {
-            byte b = pixelData[i];
-            byte g = pixelData[i + 1];
-            byte r = pixelData[i + 2];
+            var b = pixelData[i];
+            var g = pixelData[i + 1];
+            var r = pixelData[i + 2];
 
-            int pixelBrightness = (r + g + b) / 3;
+            var pixelBrightness = (r + g + b) / 3;
 
-            int threshold = averageBrightness;
+            var threshold = averageBrightness;
             if (pixelBrightness > threshold)
             {
                 r = QuantizeColor(r + colorStep / 2, colorStep);
@@ -97,7 +97,7 @@ internal class Dithering
             pixelData[i + 2] = r;
         }
 
-        WriteableBitmap ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
+        var ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
         ditheredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
 
         return ditheredBitmap;
@@ -109,51 +109,45 @@ internal class Dithering
     }
     public static WriteableBitmap ApplyOrderedDithering(WriteableBitmap source, int numShades, int matrixSize)
     {
-        int[,] thresholdMap = GetBayerMatrix(matrixSize);
+        var thresholdMap = GetBayerMatrix(matrixSize);
 
-        int width = source.PixelWidth;
-        int height = source.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
+        var width = source.PixelWidth;
+        var height = source.PixelHeight;
+        var stride = width * 4;
+        var pixelData = new byte[height * stride];
 
         source.CopyPixels(pixelData, stride, 0);
 
-        int colorStep = 255 / (numShades - 1);
+        var colorStep = 255 / (numShades - 1);
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                int index = (y * stride) + (x * 4);
+                var index = y * stride + x * 4;
 
-                byte b = pixelData[index];
-                byte g = pixelData[index + 1];
-                byte r = pixelData[index + 2];
+                var b = pixelData[index];
+                var g = pixelData[index + 1];
+                var r = pixelData[index + 2];
 
-                int threshold = thresholdMap[y % matrixSize, x % matrixSize];
+                var threshold = thresholdMap[y % matrixSize, x % matrixSize];
 
-                int thresholdValue = (threshold * 255) / (matrixSize * matrixSize);
+                var thresholdValue = threshold * 255 / (matrixSize * matrixSize);
 
                 if (b > thresholdValue)
-                {
                     b = QuantizeColor(b + colorStep / 2, colorStep);
-                }
                 else
                 {
                     b = QuantizeColor(b - colorStep / 2, colorStep);
                 }
                 if (g > thresholdValue)
-                {
                     g = QuantizeColor(g + colorStep / 2, colorStep);
-                }
                 else
                 {
                     g = QuantizeColor(g - colorStep / 2, colorStep);
                 }
                 if (r > thresholdValue)
-                {
                     r = QuantizeColor(r + colorStep / 2, colorStep);
-                }
                 else
                 {
                     r = QuantizeColor(r - colorStep / 2, colorStep);
@@ -165,7 +159,7 @@ internal class Dithering
             }
         }
 
-        WriteableBitmap ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
+        var ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
         ditheredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
 
         return ditheredBitmap;
@@ -190,31 +184,31 @@ internal class Dithering
     }
     public static WriteableBitmap ApplyErrorDiffusionDithering(WriteableBitmap source, int numShades, FilterType filterType)
     {
-        (int dx, int dy, double weight)[] filter = GetErrorDiffusionFilter(filterType);
+        var filter = GetErrorDiffusionFilter(filterType);
 
-        int width = source.PixelWidth;
-        int height = source.PixelHeight;
-        int stride = width * 4;
-        byte[] pixelData = new byte[height * stride];
+        var width = source.PixelWidth;
+        var height = source.PixelHeight;
+        var stride = width * 4;
+        var pixelData = new byte[height * stride];
 
         source.CopyPixels(pixelData, stride, 0);
 
-        int colorStep = 255 / (numShades - 1);
-        double[,] errorBuffer = new double[width, height];
+        var colorStep = 255 / (numShades - 1);
+        var errorBuffer = new double[width, height];
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                int index = (y * stride) + (x * 4);
+                var index = y * stride + x * 4;
 
-                byte b = pixelData[index];
-                byte g = pixelData[index + 1];
-                byte r = pixelData[index + 2];
+                var b = pixelData[index];
+                var g = pixelData[index + 1];
+                var r = pixelData[index + 2];
 
-                double oldGray = 0.299 * r + 0.587 * g + 0.114 * b + errorBuffer[x, y];
-                byte newGray = QuantizeColor((int)oldGray, colorStep);
-                double error = oldGray - newGray;
+                var oldGray = 0.299 * r + 0.587 * g + 0.114 * b + errorBuffer[x, y];
+                var newGray = QuantizeColor((int)oldGray, colorStep);
+                var error = oldGray - newGray;
 
                 pixelData[index] = newGray;
                 pixelData[index + 1] = newGray;
@@ -222,17 +216,15 @@ internal class Dithering
 
                 foreach (var (dx, dy, weight) in filter)
                 {
-                    int nx = x + dx;
-                    int ny = y + dy;
+                    var nx = x + dx;
+                    var ny = y + dy;
                     if (nx >= 0 && nx < width && ny >= 0 && ny < height)
-                    {
                         errorBuffer[nx, ny] += error * weight;
-                    }
                 }
             }
         }
 
-        WriteableBitmap ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
+        var ditheredBitmap = new WriteableBitmap(width, height, source.DpiX, source.DpiY, PixelFormats.Bgra32, null);
         ditheredBitmap.WritePixels(new Int32Rect(0, 0, width, height), pixelData, stride, 0);
 
         return ditheredBitmap;

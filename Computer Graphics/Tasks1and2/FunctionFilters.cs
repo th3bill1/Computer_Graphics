@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
 
-namespace Computer_Graphics
+namespace Computer_Graphics.Task1and2
 {
     internal class FunctionFilters
     {
@@ -14,12 +14,12 @@ namespace Computer_Graphics
 
             List<(byte input, byte output)> keyPoints = [];
 
-            foreach (string line in File.ReadAllLines(filePath))
+            foreach (var line in File.ReadAllLines(filePath))
             {
-                string[] parts = line.Split(',');
+                var parts = line.Split(',');
                 if (parts.Length == 2 &&
-                    byte.TryParse(parts[0], out byte input) &&
-                    byte.TryParse(parts[1], out byte output))
+                    byte.TryParse(parts[0], out var input) &&
+                    byte.TryParse(parts[1], out var output))
                 {
                     keyPoints.Add((input, output));
                 }
@@ -35,14 +35,14 @@ namespace Computer_Graphics
 
         private static byte Interpolate(byte value, List<(byte input, byte output)> keyPoints)
         {
-            for (int i = 0; i < keyPoints.Count - 1; i++)
+            for (var i = 0; i < keyPoints.Count - 1; i++)
             {
                 var (x1, y1) = keyPoints[i];
                 var (x2, y2) = keyPoints[i + 1];
 
                 if (value >= x1 && value <= x2)
                 {
-                    double ratio = (value - x1) / (double)(x2 - x1);
+                    var ratio = (value - x1) / (double)(x2 - x1);
                     return (byte)(y1 + ratio * (y2 - y1));
                 }
             }
@@ -56,13 +56,13 @@ namespace Computer_Graphics
 
         public static WriteableBitmap ApplyFunctionFilter(WriteableBitmap bitmap, Func<byte, byte> filterFunction)
         {
-            int width = bitmap.PixelWidth;
-            int height = bitmap.PixelHeight;
-            int stride = width * 4;
-            byte[] pixelData = new byte[height * stride];
+            var width = bitmap.PixelWidth;
+            var height = bitmap.PixelHeight;
+            var stride = width * 4;
+            var pixelData = new byte[height * stride];
             bitmap.CopyPixels(pixelData, stride, 0);
 
-            for (int i = 0; i < pixelData.Length; i += 4)
+            for (var i = 0; i < pixelData.Length; i += 4)
             {
                 pixelData[i] = filterFunction(pixelData[i]);
                 pixelData[i + 1] = filterFunction(pixelData[i + 1]);
