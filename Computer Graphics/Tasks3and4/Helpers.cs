@@ -62,4 +62,8 @@ internal static class Helpers
             bitmap.AddDirtyRect(new Int32Rect(x, y, width, height));
         }
     }
+    public static bool AreColorsEqual(Color a, Color b)
+    {
+        return a.R == b.R && a.G == b.G && a.B == b.B;
+    }
 }

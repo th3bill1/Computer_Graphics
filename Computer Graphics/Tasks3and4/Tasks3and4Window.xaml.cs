@@ -33,11 +33,12 @@ public partial class Tasks3and4Window : Window
         () => new Rectangle { TopLeft = p, BottomRight = p, Color = defaultColor, Thickness = defaultThickness }) },
         { DrawMode.Polygon, HandlePolygonClick },
         { DrawMode.Pacman, HandlePacmanClick },
-        { DrawMode.Edit, HandleEditClick }
+        { DrawMode.Edit, HandleEditClick },
+        { DrawMode.Flooding, HandleFloodingClick}
     };
     }
     private readonly Dictionary<DrawMode, Action<Point>> _clickHandlers;
-    private enum DrawMode { None, Line, Circle, Polygon, Pacman, Edit, Rectangle }
+    private enum DrawMode { None, Line, Circle, Polygon, Pacman, Edit, Rectangle, Flooding }
     private List<Shape> shapes = [];
     private readonly List<Line> tempPolyLines = [];
     private bool UseAA => AntiAliasingCheckBox.IsChecked == true;
@@ -486,4 +487,44 @@ public partial class Tasks3and4Window : Window
         }
         else MessageBox.Show("No polygon is currently being edtied.");
     }
+    private void FF_Click(object sender, RoutedEventArgs e)
+    {
+        currentMode = DrawMode.Flooding;
+    }
+    private unsafe void HandleFloodingClick(Point clickPos)
+    {
+        int x = (int)clickPos.X;
+        int y = (int)clickPos.Y;
+
+        if (x < 0 || x >= _bitmap.PixelWidth || y < 0 || y >= _bitmap.PixelHeight)
+            return;
+
+        Color color;
+
+        _bitmap.Lock();
+        try
+        {
+            byte* pixel = (byte*)_bitmap.BackBuffer + y * _bitmap.BackBufferStride + x * 4;
+            color = Color.FromRgb(pixel[2], pixel[1], pixel[0]);
+        }
+        finally
+        {
+            _bitmap.Unlock();
+        }
+
+        foreach (Shape s in shapes)
+        {
+            if (s is Polygon p && p.IsPointInsidePolygon(clickPos))
+            {
+                p.FloodFill = new Polygon.Flood
+                {
+                    seed = clickPos,
+                    color = Colors.Red,
+                    seedColor = color
+                };
+            }
+        }
+        RedrawAll();
+    }
+
 }

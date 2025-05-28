@@ -15,6 +15,13 @@ internal class Polygon : Shape
     public WriteableBitmap? FillImage { get; set; } = null;
     [JsonIgnore]
     public Rectangle? ClippingRectangle { get; set; } = null;
+    public struct Flood
+    {
+        public Point seed { get; set; }
+        public Color color { get; set; }
+        public Color seedColor { get; set; }
+    }
+    public Flood? FloodFill { get; set; } = null;
     public string? FillImagePath
     {
         get
@@ -48,6 +55,11 @@ internal class Polygon : Shape
 
         if (FillColor != null || FillImage != null)
             Fill(bitmap);
+
+        if(FloodFill.HasValue)
+        {
+            FloodFillLeftDown(bitmap, FloodFill.Value.seed, FloodFill.Value.seedColor, FloodFill.Value.color);
+        }
     }
 
     private void DrawWithoutAA(WriteableBitmap bitmap)
@@ -77,7 +89,6 @@ internal class Polygon : Shape
         int width = bitmap.PixelWidth;
         int height = bitmap.PixelHeight;
 
-        // Build Edge Table
         Dictionary<int, List<Edge>> edgeTable = new();
         for (int i = 0; i < Vertices.Count; i++)
         {
@@ -95,13 +106,13 @@ internal class Polygon : Shape
             double invSlope = (lower.X - upper.X) / (lower.Y - upper.Y);
 
             if (!edgeTable.ContainsKey(yMin))
-                edgeTable[yMin] = new List<Edge>();
+                edgeTable[yMin] = [];
 
             edgeTable[yMin].Add(new Edge { YMax = yMax, X = x, InvSlope = invSlope });
         }
 
         int scanY = edgeTable.Keys.Min();
-        List<Edge> activeEdges = new();
+        List<Edge> activeEdges = [];
 
         bitmap.Lock();
 
@@ -249,5 +260,75 @@ internal class Polygon : Shape
             Thickness = Thickness + 2
         };
         clippedLine.Draw(bitmap, useAA);
+    }
+    public unsafe void FloodFillLeftDown(WriteableBitmap bitmap, Point seed, Color targetColor, Color replacementColor)
+    {
+        int width = bitmap.PixelWidth;
+        int height = bitmap.PixelHeight;
+
+        int x0 = (int)seed.X;
+        int y0 = (int)seed.Y;
+
+        if (x0 < 0 || x0 >= width || y0 < 0 || y0 >= height)
+            return;
+
+        bitmap.Lock();
+
+        byte* startPixel = (byte*)bitmap.BackBuffer + y0 * bitmap.BackBufferStride + x0 * 4;
+        Color startColor = Color.FromRgb(startPixel[2], startPixel[1], startPixel[0]);
+
+        if (!Helpers.AreColorsEqual(startColor, targetColor))
+        {
+            bitmap.Unlock();
+            return;
+        }
+
+        Stack<Point> stack = new();
+        stack.Push(new Point(x0, y0));
+
+        while (stack.Count > 0)
+        {
+            Point p = stack.Pop();
+            int x = (int)p.X;
+            int y = (int)p.Y;
+
+            if (x < 0 || x >= width || y < 0 || y >= height)
+                continue;
+
+            byte* pixel = (byte*)bitmap.BackBuffer + y * bitmap.BackBufferStride + x * 4;
+            Color current = Color.FromRgb(pixel[2], pixel[1], pixel[0]);
+
+            if (!Helpers.AreColorsEqual(current, targetColor))
+                continue;
+
+            pixel[0] = replacementColor.B;
+            pixel[1] = replacementColor.G;
+            pixel[2] = replacementColor.R;
+            pixel[3] = 255;
+
+            stack.Push(new Point(x - 1, y));
+            stack.Push(new Point(x, y + 1));
+        }
+
+        bitmap.AddDirtyRect(new Int32Rect(0, 0, width, height));
+        bitmap.Unlock();
+    }
+    public bool IsPointInsidePolygon(Point p)
+    {
+        int count = Vertices.Count;
+        bool inside = false;
+
+        for (int i = 0, j = count - 1; i < count; j = i++)
+        {
+            Point vi = Vertices[i];
+            Point vj = Vertices[j];
+
+            if (((vi.Y > p.Y) != (vj.Y > p.Y)) &&
+                (p.X < (vj.X - vi.X) * (p.Y - vi.Y) / (vj.Y - vi.Y) + vi.X))
+            {
+                inside = !inside;
+            }
+        }
+        return inside;
     }
 }

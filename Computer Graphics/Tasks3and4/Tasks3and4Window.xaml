@@ -36,6 +36,7 @@
             <Button Content="Load Img" Click="LoadFillingImage_Click" Margin="5"/>
             <Button Content="Fill" Click="FillRectangle_Click" Margin="5"/>
             <Button Content="Clip" Click="Clip_Click" Margin="5"/>
+            <Button Content="FF" Click="FF_Click" Margin="5"/>
 
         </StackPanel>
         
