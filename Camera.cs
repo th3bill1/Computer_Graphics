@@ -13,16 +13,9 @@ public class Camera
     Distance * MathF.Sin(Pitch),
     Distance * MathF.Cos(Pitch) * MathF.Cos(Yaw));
 
-    public Matrix4x4 GetViewMatrix()
-    {
-        System.Diagnostics.Debug.WriteLine($"Camera Position: {Position}");
-        return Matrix4x4.CreateLookAt(Position, Vector3.Zero, Vector3.UnitY);
-    }
+    public Matrix4x4 GetViewMatrix() => Matrix4x4.CreateLookAt(Position, Vector3.Zero, Vector3.UnitY);
 
-    public Matrix4x4 GetProjectionMatrix(float aspect = 800f / 600f)
-    {
-        return Matrix4x4.CreatePerspectiveFieldOfView(MathF.PI / 3f, aspect, 0.1f, 100f);
-    }
+    public Matrix4x4 GetProjectionMatrix(float aspect = 800f / 600f) => Matrix4x4.CreatePerspectiveFieldOfView(MathF.PI / 3f, aspect, 0.1f, 100f);
 
     public void Rotate(double dx, double dy)
     {

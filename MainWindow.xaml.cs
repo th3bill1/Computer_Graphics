@@ -59,5 +59,4 @@ public partial class MainWindow : Window
             camera.Distance = (float)e.NewValue;
         }
     }
-
 }

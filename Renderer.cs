@@ -11,6 +11,8 @@ public class Renderer(WriteableBitmap bmp, Mesh mesh, Camera cam)
     private readonly Camera cam = cam;
     private readonly float[,] zBuffer = new float[bmp.PixelHeight, bmp.PixelWidth];
 
+    private readonly Vector3 lightPos = new(2, 2, -2);
+
     public void Render()
     {
         bmp.Lock();
@@ -83,7 +85,7 @@ public class Renderer(WriteableBitmap bmp, Mesh mesh, Camera cam)
         int stride)
     {
         Vector3[] ndc = new Vector3[3];
-        Vector4[] clips = new[] { clip1, clip2, clip3 };
+        Vector4[] clips = [clip1, clip2, clip3];
         for (int i = 0; i < 3; i++)
         {
             if (Math.Abs(clips[i].W) < 1e-5f) return;
@@ -92,9 +94,9 @@ public class Renderer(WriteableBitmap bmp, Mesh mesh, Camera cam)
         }
 
         int w = bmp.PixelWidth, h = bmp.PixelHeight;
-        Vector2[] screen = ndc.Select(p => new Vector2(
+        Vector2[] screen = [.. ndc.Select(p => new Vector2(
             (p.X + 1) * 0.5f * w,
-            (1 - p.Y) * 0.5f * h)).ToArray();
+            (1 - p.Y) * 0.5f * h))];
 
         int minX = (int)MathF.Floor(screen.Min(v => v.X));
         int maxX = (int)MathF.Ceiling(screen.Max(v => v.X));
@@ -143,7 +145,6 @@ public class Renderer(WriteableBitmap bmp, Mesh mesh, Camera cam)
                 Vector3 worldP = w0 * wp1 + w1 * wp2 + w2 * wp3;
                 Vector3 normal = Vector3.Normalize(w0 * n1 + w1 * n2 + w2 * n3);
 
-                Vector3 lightPos = new(2, 2, -2); // Static light
                 Vector3 L = Vector3.Normalize(lightPos - worldP);
                 Vector3 V = Vector3.Normalize(cameraPos - worldP);
                 Vector3 R = Vector3.Reflect(L, normal);
