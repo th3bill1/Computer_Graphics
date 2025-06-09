@@ -12,9 +12,9 @@ public partial class MainWindow : Window
     private const int WIDTH = 800;
     private const int HEIGHT = 600;
 
-    private Camera camera;
-    private Mesh sphereMesh;
-    private Renderer renderer;
+    private readonly Camera camera;
+    private readonly Mesh sphereMesh;
+    private readonly Renderer renderer;
 
     private Point lastMousePos;
 
